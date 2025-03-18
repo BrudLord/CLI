@@ -20,8 +20,7 @@ public class ExitCommandCreator implements CommandCreator {
             return false;
         }
 
-        Token arg = args.getFirst();
-        return !arg.getCommand().equals("exit");
+        return args.getFirst().getCommand().equals("exit");
     }
 
     @Override
