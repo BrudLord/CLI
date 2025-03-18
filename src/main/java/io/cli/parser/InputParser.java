@@ -1,6 +1,7 @@
 package io.cli.parser;
 
 import io.cli.command.Command;
+import io.cli.command.CommandCreator;
 import io.cli.parser.innerparser.PipeParser;
 import io.cli.parser.innerparser.QuoteParser;
 import io.cli.parser.innerparser.Substitutor;
@@ -10,10 +11,10 @@ import java.util.List;
 import java.util.Optional;
 
 public class InputParser {
-    private final List<Command> commands;
+    private final List<CommandCreator> commandsCreators;
 
-    public InputParser(List<Command> commands) {
-        this.commands = commands;
+    public InputParser(List<CommandCreator> commandsCreators) {
+        this.commandsCreators = commandsCreators;
     }
 
     public List<Command> parse(String str) {
@@ -28,8 +29,8 @@ public class InputParser {
 
     private List<Command> tokenize(List<List<Token>> tokens) {
         return tokens.stream()
-                .map(tokenList -> commands.stream()
-                        .map(command -> command.newInstance(tokenList))
+                .map(tokenList -> commandsCreators.stream()
+                        .map(command -> command.newCommand(tokenList))
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .findFirst()
