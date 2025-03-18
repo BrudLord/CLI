@@ -12,6 +12,14 @@ public class Token {
         this.command = command;
     }
 
+    public TokenType getType() {
+        return type;
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
