@@ -23,7 +23,7 @@ public class AssignCommandCreator implements CommandCreator {
 
         String assignment = args.getFirst().getCommand();
 
-        if (assignment.isEmpty() || !Character.isAlphabetic(assignment.charAt(0))) {
+        if (assignment.isEmpty() || !(Character.isAlphabetic(assignment.charAt(0)) || assignment.charAt(0) == '_')) {
             return Optional.empty();
         }
 
@@ -35,7 +35,7 @@ public class AssignCommandCreator implements CommandCreator {
 
         for (int i = 1; i < assignment.length(); i++) {
             char currentChar = assignment.charAt(i);
-            if (Character.isAlphabetic(currentChar) || Character.isDigit(currentChar)) {
+            if (Character.isAlphabetic(currentChar) || Character.isDigit(currentChar) || currentChar == '_') {
                 keyBuilder.append(currentChar);
             } else if (currentChar == '=') {
                 key = keyBuilder.toString();
