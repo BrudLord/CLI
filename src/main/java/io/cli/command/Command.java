@@ -1,6 +1,6 @@
 package io.cli.command;
 
-import io.cli.parsers.token.Token;
+import io.cli.parser.token.Token;
 
 import java.io.InputStream;
 import java.io.OutputStream;

@@ -1,10 +1,10 @@
-package io.cli.parsers;
+package io.cli.parser;
 
 import io.cli.command.Command;
-import io.cli.parsers.innerparser.PipeParser;
-import io.cli.parsers.innerparser.QuoteParser;
-import io.cli.parsers.innerparser.Substitutor;
-import io.cli.parsers.token.Token;
+import io.cli.parser.innerparser.PipeParser;
+import io.cli.parser.innerparser.QuoteParser;
+import io.cli.parser.innerparser.Substitutor;
+import io.cli.parser.token.Token;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +28,7 @@ public class InputParser {
 
     private List<Command> tokenize(List<List<Token>> tokens) {
         return tokens.stream()
-                .map(tokenList -> commands.stream()
+                .map(tokenList -> commands.parallelStream()
                         .map(command -> command.newInstance(tokenList))
                         .filter(Optional::isPresent)
                         .map(Optional::get)

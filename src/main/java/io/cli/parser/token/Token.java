@@ -1,4 +1,4 @@
-package io.cli.parsers.token;
+package io.cli.parser.token;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

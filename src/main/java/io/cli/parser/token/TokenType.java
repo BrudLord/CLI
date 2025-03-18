@@ -1,4 +1,4 @@
-package io.cli.parsers.token;
+package io.cli.parser.token;
 
 public enum TokenType {
     DOUBLE_QUOTES,

@@ -1,6 +1,6 @@
-package io.cli.parsers.innerparser;
+package io.cli.parser.innerparser;
 
-import io.cli.parsers.token.Token;
+import io.cli.parser.token.Token;
 
 import java.util.List;
 
