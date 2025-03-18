@@ -24,9 +24,11 @@ public class QuoteParser {
                     state = TokenType.COMMAND;
                 } else if (state != TokenType.COMMAND) {
                     token.append(c);
-                } else if (!token.isEmpty()) {
-                    tokens.add(new Token(state, token.toString()));
-                    token.setLength(0);
+                } else {
+                    if (!token.isEmpty()) {
+                        tokens.add(new Token(state, token.toString()));
+                        token.setLength(0);
+                    }
                     state = quoteType;
                 }
             } else {
