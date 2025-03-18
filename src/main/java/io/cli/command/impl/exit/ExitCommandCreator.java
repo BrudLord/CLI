@@ -4,7 +4,6 @@ import io.cli.command.Command;
 import io.cli.command.CommandCreator;
 import io.cli.context.Context;
 import io.cli.parser.token.Token;
-import io.cli.parser.token.TokenType;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +21,7 @@ public class ExitCommandCreator implements CommandCreator {
         }
 
         Token arg = args.getFirst();
-        return arg.getType() != TokenType.COMMAND || !arg.getCommand().equals("exit");
+        return !arg.getCommand().equals("exit");
     }
 
     @Override
