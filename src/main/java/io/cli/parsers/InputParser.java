@@ -12,7 +12,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class MainParser {
+public class InputParser {
     List<Command> commands;
 
     public List<Command> parse(String str) {
