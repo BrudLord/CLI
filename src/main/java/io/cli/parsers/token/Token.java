@@ -1,9 +1,11 @@
 package io.cli.parsers.token;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
+@Getter
 public class Token {
-    TokenType type;
-    String command;
+    private TokenType type;
+    private String command;
 }

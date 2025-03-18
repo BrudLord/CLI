@@ -6,8 +6,8 @@ import io.cli.parsers.token.TokenType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QouteParser {
-    public static List<Token> parseQoute(String input) {
+public class QuoteParser {
+    public static List<Token> parseQuote(String input) {
         List<Token> tokens = new ArrayList<>();
         StringBuilder token = new StringBuilder();
         TokenType state = TokenType.COMMAND;

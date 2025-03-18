@@ -5,13 +5,14 @@ import io.cli.parsers.token.Token;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Optional;
 
 public interface Command {
-    public Command newInstance(List<Token> tokens);
+    Optional<Command> newInstance(List<Token> tokens);
 
-    public void execute();
+    void execute();
 
-    public void setInputStream(InputStream input);
+    void setInputStream(InputStream input);
 
-    public void setOutputStream(OutputStream output);
+    void setOutputStream(OutputStream output);
 }
