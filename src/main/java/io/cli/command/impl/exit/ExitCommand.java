@@ -9,20 +9,19 @@ import java.io.OutputStream;
 import java.util.List;
 
 public class ExitCommand implements Command {
-    private final Context context;
     private final List<Token> args;
 
     private InputStream inputStream = System.in;
     private OutputStream outputStream = System.out;
 
-    public ExitCommand(Context context, List<Token> args) {
-        this.context = context;
+    public ExitCommand(List<Token> args) {
         this.args = args;
     }
 
     @Override
-    public void execute() {
+    public int execute() {
         System.exit(0);
+        return 0;
     }
 
     @Override

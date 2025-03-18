@@ -2,17 +2,13 @@ package io.cli.command.impl.exit;
 
 import io.cli.command.Command;
 import io.cli.command.CommandCreator;
-import io.cli.context.Context;
 import io.cli.parser.token.Token;
 
 import java.util.List;
 import java.util.Optional;
 
 public class ExitCommandCreator implements CommandCreator {
-    private final Context context;
-
-    public ExitCommandCreator(Context context) {
-        this.context = context;
+    public ExitCommandCreator() {
     }
 
     private static boolean checkArgs(List<Token> args) {
@@ -29,7 +25,7 @@ public class ExitCommandCreator implements CommandCreator {
             return Optional.empty();
         }
 
-        Command command = new ExitCommand(context, args);
+        Command command = new ExitCommand(args);
         return Optional.of(command);
     }
 }

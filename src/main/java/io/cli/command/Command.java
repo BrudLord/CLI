@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public interface Command {
-    void execute();
+    int execute();
 
     void setInputStream(InputStream newInputStream);
 
