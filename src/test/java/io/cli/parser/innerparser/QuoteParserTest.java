@@ -14,7 +14,13 @@ public class QuoteParserTest {
     @Test
     public void testOneToken() {
         String strToParse = "1 2 3 4 5";
-        List<Token> expected = List.of(new Token(TokenType.COMMAND, strToParse));
+        List<Token> expected = List.of(
+                new Token(TokenType.COMMAND, "1"),
+                new Token(TokenType.COMMAND, "2"),
+                new Token(TokenType.COMMAND, "3"),
+                new Token(TokenType.COMMAND, "4"),
+                new Token(TokenType.COMMAND, "5")
+        );
         assertEquals(expected, QuoteParser.parseQuote(strToParse));
     }
 
@@ -23,7 +29,7 @@ public class QuoteParserTest {
         String strToParse = "\"1 2\" 3 \"4 5\"";
         List<Token> expected = List.of(
                 new Token(TokenType.DOUBLE_QUOTES, "1 2"),
-                new Token(TokenType.COMMAND, " 3 "),
+                new Token(TokenType.COMMAND, "3"),
                 new Token(TokenType.DOUBLE_QUOTES, "4 5")
         );
         assertEquals(expected, QuoteParser.parseQuote(strToParse));
@@ -34,7 +40,7 @@ public class QuoteParserTest {
         String strToParse = "'1 2' 3 '4 5'";
         List<Token> expected = List.of(
                 new Token(TokenType.SINGLE_QUOTES, "1 2"),
-                new Token(TokenType.COMMAND, " 3 "),
+                new Token(TokenType.COMMAND, "3"),
                 new Token(TokenType.SINGLE_QUOTES, "4 5")
         );
         assertEquals(expected, QuoteParser.parseQuote(strToParse));

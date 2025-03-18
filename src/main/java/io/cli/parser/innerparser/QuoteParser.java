@@ -31,6 +31,15 @@ public class QuoteParser {
                     }
                     state = quoteType;
                 }
+            } else if (c == ' ') {
+                if (state == TokenType.COMMAND) {
+                    if (!token.isEmpty()) {
+                        tokens.add(new Token(state, token.toString()));
+                        token.setLength(0);
+                    }
+                } else {
+                    token.append(c);
+                }
             } else {
                 token.append(c);
             }
