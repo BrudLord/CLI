@@ -28,11 +28,11 @@ public class InputParser {
 
     private List<Command> tokenize(List<List<Token>> tokens) {
         return tokens.stream()
-                .map(tokenList -> commands.parallelStream()
+                .map(tokenList -> commands.stream()
                         .map(command -> command.newInstance(tokenList))
                         .filter(Optional::isPresent)
                         .map(Optional::get)
-                        .findAny()
+                        .findFirst()
                         .orElseThrow()
                 ).toList();
     }
