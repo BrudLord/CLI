@@ -5,16 +5,16 @@ import io.cli.parser.innerparser.PipeParser;
 import io.cli.parser.innerparser.QuoteParser;
 import io.cli.parser.innerparser.Substitutor;
 import io.cli.parser.token.Token;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
-@Component
-@RequiredArgsConstructor
 public class InputParser {
     private final List<Command> commands;
+
+    public InputParser(List<Command> commands) {
+        this.commands = commands;
+    }
 
     public List<Command> parse(String str) {
         return tokenize(
