@@ -6,7 +6,7 @@ import java.io.OutputStream;
 public interface Command {
     void execute();
 
-    void setInputStream(InputStream input);
+    void setInputStream(InputStream newInputStream);
 
-    void setOutputStream(OutputStream output);
+    void setOutputStream(OutputStream newOutputStream);
 }
