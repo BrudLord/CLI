@@ -20,7 +20,11 @@ public class ExitCommand implements Command {
 
     @Override
     public int execute() {
-        throw new ExitException(0);
+        int exitCode = 0;
+        if (args.size() == 2) {
+            exitCode = Integer.parseInt(args.get(1).getInput());
+        }
+        throw new ExitException(exitCode);
     }
 
     @Override
