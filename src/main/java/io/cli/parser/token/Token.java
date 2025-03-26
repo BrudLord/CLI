@@ -5,19 +5,19 @@ import java.util.Objects;
 
 public class Token {
     private final TokenType type;
-    private final String command;
+    private final String input;
 
-    public Token(TokenType type, String command) {
+    public Token(TokenType type, String input) {
         this.type = type;
-        this.command = command;
+        this.input = input;
     }
 
     public TokenType getType() {
         return type;
     }
 
-    public String getCommand() {
-        return command;
+    public String getInput() {
+        return input;
     }
 
     @Override
@@ -25,19 +25,19 @@ public class Token {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Token token = (Token) obj;
-        return type == token.type && command.equals(token.command);
+        return type == token.type && input.equals(token.input);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, command);
+        return Objects.hash(type, input);
     }
 
     @Override
     public String toString() {
         return "Token{" +
                 "type=" + type +
-                ", command='" + command + '\'' +
+                ", command='" + input + '\'' +
                 '}';
     }
 }

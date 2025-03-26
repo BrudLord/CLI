@@ -17,6 +17,6 @@ public class ExternalCommandCreator implements CommandCreator {
 
     @Override
     public Optional<Command> newCommand(List<Token> args) {
-        return Optional.of(new ExternalCommand(context, args.stream().map(Token::getCommand).toList()));
+        return Optional.of(new ExternalCommand(context, args.stream().map(Token::getInput).toList()));
     }
 }

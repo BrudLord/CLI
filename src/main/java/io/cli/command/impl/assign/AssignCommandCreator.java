@@ -21,7 +21,7 @@ public class AssignCommandCreator implements CommandCreator {
             return Optional.empty();
         }
 
-        String assignment = args.getFirst().getCommand();
+        String assignment = args.getFirst().getInput();
 
         if (assignment.isEmpty() || !(Character.isAlphabetic(assignment.charAt(0)) || assignment.charAt(0) == '_')) {
             return Optional.empty();
@@ -51,7 +51,7 @@ public class AssignCommandCreator implements CommandCreator {
         }
 
         for (int i = 1; i < args.size(); i++) {
-            valueBuilder.append(args.get(i).getCommand());
+            valueBuilder.append(args.get(i).getInput());
         }
 
         String value = valueBuilder.toString();

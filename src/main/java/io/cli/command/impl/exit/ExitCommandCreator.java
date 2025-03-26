@@ -16,7 +16,7 @@ public class ExitCommandCreator implements CommandCreator {
             return false;
         }
 
-        return args.getFirst().getCommand().equals("exit");
+        return args.getFirst().getInput().equals("exit");
     }
 
     @Override

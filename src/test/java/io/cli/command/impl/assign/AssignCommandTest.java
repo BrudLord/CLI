@@ -4,7 +4,7 @@ import io.cli.command.Command;
 import io.cli.command.impl.external.ExternalCommand;
 import io.cli.command.impl.external.ExternalCommandCreator;
 import io.cli.context.Context;
-import io.cli.parser.InputParser;
+import io.cli.parser.ParserOrchestrator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 class AssignCommandTest {
-    private InputParser inputParser;
+    private ParserOrchestrator parserOrchestrator;
     private Context context;
 
     @BeforeEach
     void setUp() {
         context = new Context();
-        inputParser = new InputParser(List.of(
+        parserOrchestrator = new ParserOrchestrator(List.of(
                 new AssignCommandCreator(context),
                 new ExternalCommandCreator(context)
         ));
@@ -30,7 +30,7 @@ class AssignCommandTest {
         String value = "simple_value";
 
         String commandStr = String.format("%s=%s", key, value);
-        List<Command> commands = inputParser.parse(commandStr);
+        List<Command> commands = parserOrchestrator.parse(commandStr, new Context());
 
         Assertions.assertEquals(1, commands.size());
         Assertions.assertInstanceOf(AssignCommand.class, commands.getFirst());
@@ -46,7 +46,7 @@ class AssignCommandTest {
         String value = "\"Hello world\"";
 
         String commandStr = String.format("%s=%s", key, value);
-        List<Command> commands = inputParser.parse(commandStr);
+        List<Command> commands = parserOrchestrator.parse(commandStr, new Context());
 
         Assertions.assertEquals(1, commands.size());
         Assertions.assertInstanceOf(AssignCommand.class, commands.getFirst());
@@ -62,7 +62,7 @@ class AssignCommandTest {
         String value = "\"!@#$%^&*()_+{}[]\"";
 
         String commandStr = String.format("%s=%s", key, value);
-        List<Command> commands = inputParser.parse(commandStr);
+        List<Command> commands = parserOrchestrator.parse(commandStr, new Context());
 
         Assertions.assertEquals(1, commands.size());
         Assertions.assertInstanceOf(AssignCommand.class, commands.getFirst());
@@ -78,7 +78,7 @@ class AssignCommandTest {
         String value = "";
 
         String commandStr = String.format("%s=%s", key, value);
-        List<Command> commands = inputParser.parse(commandStr);
+        List<Command> commands = parserOrchestrator.parse(commandStr, new Context());
 
         Assertions.assertEquals(1, commands.size());
         Assertions.assertInstanceOf(AssignCommand.class, commands.getFirst());
@@ -94,7 +94,7 @@ class AssignCommandTest {
         String value = "value";
 
         String commandStr = String.format("%s=%s", key, value);
-        List<Command> commands = inputParser.parse(commandStr);
+        List<Command> commands = parserOrchestrator.parse(commandStr, new Context());
 
         Assertions.assertEquals(1, commands.size());
         Assertions.assertInstanceOf(ExternalCommand.class, commands.getFirst());
@@ -108,7 +108,7 @@ class AssignCommandTest {
         String value = "test";
 
         String commandStr = String.format("%s=%s", key, value);
-        List<Command> commands = inputParser.parse(commandStr);
+        List<Command> commands = parserOrchestrator.parse(commandStr, new Context());
 
         Assertions.assertEquals(1, commands.size());
         Assertions.assertInstanceOf(ExternalCommand.class, commands.getFirst());
@@ -119,7 +119,7 @@ class AssignCommandTest {
     @Test
     void testInvalidWithOnlyEquals() {
         String commandStr = "=";
-        List<Command> commands = inputParser.parse(commandStr);
+        List<Command> commands = parserOrchestrator.parse(commandStr, new Context());
 
         Assertions.assertEquals(1, commands.size());
         Assertions.assertInstanceOf(ExternalCommand.class, commands.getFirst());
@@ -131,7 +131,7 @@ class AssignCommandTest {
         String value = "some_value";
 
         String commandStr = String.format("%s=%s", key, value);
-        List<Command> commands = inputParser.parse(commandStr);
+        List<Command> commands = parserOrchestrator.parse(commandStr, new Context());
 
         Assertions.assertEquals(1, commands.size());
         Assertions.assertInstanceOf(ExternalCommand.class, commands.getFirst());
