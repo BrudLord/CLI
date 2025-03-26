@@ -6,6 +6,7 @@ import io.cli.executor.Executor;
 import io.cli.parser.ParserOrchestrator;
 import io.cli.parser.token.Token;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +25,7 @@ public class MainOrchestrator {
         this.executor = executor;
     }
 
-    public void processInput(String input) {
+    public void processInput(String input) throws IOException {
         List<List<Token>> parsedTokens = parserOrchestrator.parse(input);
         List<Command> commands = parsedTokens.stream().map(this::createCommand).toList();
         executor.pipeAndExecuteCommands(commands);
