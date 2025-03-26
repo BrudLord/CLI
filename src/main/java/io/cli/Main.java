@@ -2,6 +2,7 @@ package io.cli;
 
 import io.cli.command.CommandFactory;
 import io.cli.command.impl.assign.AssignCommandFactory;
+import io.cli.command.impl.echo.EchoCommandFactory;
 import io.cli.command.impl.exit.ExitCommandFactory;
 import io.cli.command.impl.external.ExternalCommandFactory;
 import io.cli.context.Context;
@@ -46,7 +47,8 @@ public class Main {
         List<CommandFactory> commandFactories = List.of(
                 new AssignCommandFactory(context),
                 new ExitCommandFactory(),
-                new ExternalCommandFactory(context)  // External
+                new EchoCommandFactory(),
+                new ExternalCommandFactory(context)  // External command always should be the last
         );
 
         Executor executor = new Executor(context);
