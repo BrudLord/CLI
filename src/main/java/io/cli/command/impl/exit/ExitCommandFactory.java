@@ -12,7 +12,7 @@ public class ExitCommandFactory implements CommandFactory {
     }
 
     private static boolean checkArgs(List<Token> args) {
-        if (args.size() != 1) {
+        if (args.isEmpty() || args.size() > 2) {
             return false;
         }
 

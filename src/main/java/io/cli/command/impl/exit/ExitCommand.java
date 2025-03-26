@@ -1,7 +1,7 @@
 package io.cli.command.impl.exit;
 
 import io.cli.command.Command;
-import io.cli.context.Context;
+import io.cli.exception.ExitException;
 import io.cli.parser.token.Token;
 
 import java.io.InputStream;
@@ -20,8 +20,7 @@ public class ExitCommand implements Command {
 
     @Override
     public int execute() {
-        System.exit(0);
-        return 0;
+        throw new ExitException(0);
     }
 
     @Override

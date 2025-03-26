@@ -7,6 +7,10 @@ import java.util.Map;
 public class Context {
     private final Map<String, String> envVars = new HashMap<>();
 
+    public Context() {
+        setVar("?", "0");
+    }
+
     public Map<String, String> getEnvironment() {
         return Collections.unmodifiableMap(envVars);
     }

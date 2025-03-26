@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ExternalCommand implements Command {
     private final Context context;
@@ -14,6 +16,8 @@ public class ExternalCommand implements Command {
 
     private InputStream inputStream = System.in;
     private OutputStream outputStream = System.out;
+
+    private final ExecutorService streamsExecutor = Executors.newFixedThreadPool(3);
 
     public ExternalCommand(Context context, List<String> args) {
         this.context = context;
@@ -27,16 +31,20 @@ public class ExternalCommand implements Command {
 
         try {
             Process process = processBuilder.start();
-
-            Thread inputThread = new Thread(() -> {
+            streamsExecutor.submit(() -> {
                 try (OutputStream processInput = process.getOutputStream()) {
-                    inputStream.transferTo(processInput);
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        processInput.write(buffer, 0, bytesRead);
+                        processInput.flush();
+                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             });
 
-            Thread outputThread = new Thread(() -> {
+            streamsExecutor.submit(() -> {
                 try (InputStream processOutput = process.getInputStream()) {
                     processOutput.transferTo(outputStream);
                 } catch (IOException e) {
@@ -44,13 +52,18 @@ public class ExternalCommand implements Command {
                 }
             });
 
-            inputThread.start();
-            outputThread.start();
+            streamsExecutor.submit(() -> {
+                try (InputStream processError = process.getErrorStream()) {
+                    processError.transferTo(System.err);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
 
-            inputThread.join();
-            outputThread.join();
+            int exitCode = process.waitFor();
+            streamsExecutor.shutdown();
 
-            return process.waitFor();
+            return exitCode;
 
         } catch (IOException | InterruptedException e) {
             return 1;
