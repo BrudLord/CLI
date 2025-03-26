@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QuoteParser {
-    public static List<Token> parseQuote(String input) {
+    public List<Token> parseQuote(String input) {
         List<Token> tokens = new ArrayList<>();
         StringBuilder token = new StringBuilder();
         TokenType state = TokenType.COMMAND;

@@ -15,7 +15,7 @@ public class SubstitutorTest {
         Context context = new Context();
         context.setVar("x", "12");
         context.setVar("y", "404");
-        var res = Substitutor.substitute(List.of(new Token(TokenType.COMMAND, "x=$x;y=$y")), context);
+        var res = (new Substitutor()).substitute(List.of(new Token(TokenType.COMMAND, "x=$x;y=$y")), context);
         assertEquals(List.of(new Token(TokenType.COMMAND, "x=12;y=404")), res);
     }
 }

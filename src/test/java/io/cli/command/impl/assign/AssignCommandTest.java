@@ -5,6 +5,9 @@ import io.cli.command.impl.external.ExternalCommand;
 import io.cli.command.impl.external.ExternalCommandCreator;
 import io.cli.context.Context;
 import io.cli.parser.ParserOrchestrator;
+import io.cli.parser.innerparser.PipeParser;
+import io.cli.parser.innerparser.QuoteParser;
+import io.cli.parser.innerparser.Substitutor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,10 +21,15 @@ class AssignCommandTest {
     @BeforeEach
     void setUp() {
         context = new Context();
-        parserOrchestrator = new ParserOrchestrator(List.of(
-                new AssignCommandCreator(context),
-                new ExternalCommandCreator(context)
-        ));
+        parserOrchestrator = new ParserOrchestrator(
+                List.of(
+                        new AssignCommandCreator(context),
+                        new ExternalCommandCreator(context)
+                ),
+                new PipeParser(),
+                new QuoteParser(),
+                new Substitutor()
+        );
     }
 
     @Test

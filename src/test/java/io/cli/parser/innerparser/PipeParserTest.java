@@ -18,7 +18,7 @@ public class PipeParserTest {
         tokens.add(new Token(TokenType.COMMAND, "x=12"));
         tokens.add(new Token(TokenType.COMMAND, "1 | 2 | 3"));
         tokens.add(new Token(TokenType.COMMAND, "4 | 5"));
-        var actual = PipeParser.parsePipe(tokens);
+        var actual = (new PipeParser()).parsePipe(tokens);
 
         List<List<Token>> expect = new ArrayList<>();
         expect.add(List.of(new Token(TokenType.COMMAND, "x=12"), new Token(TokenType.COMMAND, "1 ")));

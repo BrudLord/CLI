@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PipeParser {
-    public static List<List<Token>> parsePipe(List<Token> input) {
+    public List<List<Token>> parsePipe(List<Token> input) {
         List<List<Token>> tokens = new ArrayList<>();
         List<Token> current = new ArrayList<>();
         for (Token token : input) {
@@ -23,7 +23,7 @@ public class PipeParser {
         return tokens;
     }
 
-    private static void parseToken(String str, List<Token> current, List<List<Token>> tokens) {
+    private void parseToken(String str, List<Token> current, List<List<Token>> tokens) {
         StringBuilder currentToken = new StringBuilder();
         for (char c : str.toCharArray()) {
             if (c == '|') {

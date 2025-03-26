@@ -10,7 +10,7 @@ import java.util.List;
 import static java.lang.Character.isAlphabetic;
 
 public class Substitutor {
-    public static List<Token> substitute(List<Token> input, Context context) {
+    public List<Token> substitute(List<Token> input, Context context) {
         List<Token> result = new ArrayList<>();
 
         for (Token token : input) {
@@ -24,7 +24,7 @@ public class Substitutor {
         return result;
     }
 
-    private static String substituteVariables(String str, Context context) {
+    private String substituteVariables(String str, Context context) {
         StringBuilder result = new StringBuilder();
         int i = 0;
         StringBuilder varBuilder = new StringBuilder();

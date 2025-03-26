@@ -13,16 +13,25 @@ import java.util.Optional;
 
 public class ParserOrchestrator {
     private final List<CommandCreator> commandsCreators;
+    private final PipeParser pipeParser;
+    private final QuoteParser quoteParser;
+    private final Substitutor substitutor;
 
-    public ParserOrchestrator(List<CommandCreator> commandsCreators) {
+    public ParserOrchestrator(List<CommandCreator> commandsCreators,
+                              PipeParser pipeParser,
+                              QuoteParser quoteParser,
+                              Substitutor substitutor) {
         this.commandsCreators = commandsCreators;
+        this.pipeParser = pipeParser;
+        this.quoteParser = quoteParser;
+        this.substitutor = substitutor;
     }
 
     public List<Command> parse(String str, Context context) {
         return tokenize(
-                PipeParser.parsePipe(
-                        Substitutor.substitute(
-                                QuoteParser.parseQuote(str),
+                pipeParser.parsePipe(
+                        substitutor.substitute(
+                                quoteParser.parseQuote(str),
                                 context
                         )
                 )

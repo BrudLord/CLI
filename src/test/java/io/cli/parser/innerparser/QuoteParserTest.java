@@ -21,7 +21,7 @@ public class QuoteParserTest {
                 new Token(TokenType.COMMAND, "4"),
                 new Token(TokenType.COMMAND, "5")
         );
-        assertEquals(expected, QuoteParser.parseQuote(strToParse));
+        assertEquals(expected, (new QuoteParser()).parseQuote(strToParse));
     }
 
     @Test
@@ -32,7 +32,7 @@ public class QuoteParserTest {
                 new Token(TokenType.COMMAND, "3"),
                 new Token(TokenType.DOUBLE_QUOTES, "4 5")
         );
-        assertEquals(expected, QuoteParser.parseQuote(strToParse));
+        assertEquals(expected, (new QuoteParser()).parseQuote(strToParse));
     }
 
     @Test
@@ -43,7 +43,7 @@ public class QuoteParserTest {
                 new Token(TokenType.COMMAND, "3"),
                 new Token(TokenType.SINGLE_QUOTES, "4 5")
         );
-        assertEquals(expected, QuoteParser.parseQuote(strToParse));
+        assertEquals(expected, (new QuoteParser()).parseQuote(strToParse));
     }
 
     @Test
@@ -52,7 +52,7 @@ public class QuoteParserTest {
         List<Token> expected = List.of(
                 new Token(TokenType.DOUBLE_QUOTES, "1 '2' 3")
         );
-        assertEquals(expected, QuoteParser.parseQuote(strToParse));
+        assertEquals(expected, (new QuoteParser()).parseQuote(strToParse));
     }
 
     @Test
@@ -61,6 +61,6 @@ public class QuoteParserTest {
         List<Token> expected = List.of(
                 new Token(TokenType.SINGLE_QUOTES, "1 \"2\" 3")
         );
-        assertEquals(expected, QuoteParser.parseQuote(strToParse));
+        assertEquals(expected, (new QuoteParser()).parseQuote(strToParse));
     }
 }
