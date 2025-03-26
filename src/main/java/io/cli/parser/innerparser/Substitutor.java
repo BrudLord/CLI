@@ -31,7 +31,8 @@ public class Substitutor {
         boolean startSubstitute = false;
         while (i < str.length()) {
             if (startSubstitute) {
-                if (isAlphabetic(str.charAt(i))) {
+                // TODO: Add check for the first symbol
+                if (Character.isAlphabetic(str.charAt(i)) || Character.isDigit(str.charAt(i)) || str.charAt(i) == '_' || str.charAt(i) == '?') {
                     varBuilder.append(str.charAt(i));
                     i++;
                 } else {
