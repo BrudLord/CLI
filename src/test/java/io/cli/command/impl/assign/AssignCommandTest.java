@@ -2,7 +2,7 @@ package io.cli.command.impl.assign;
 
 import io.cli.command.Command;
 import io.cli.command.impl.external.ExternalCommand;
-import io.cli.command.impl.external.ExternalCommandCreator;
+import io.cli.command.impl.external.ExternalCommandFactory;
 import io.cli.context.Context;
 import io.cli.parser.ParserOrchestrator;
 import io.cli.parser.innerparser.PipeParser;
@@ -23,8 +23,8 @@ class AssignCommandTest {
         context = new Context();
         parserOrchestrator = new ParserOrchestrator(
                 List.of(
-                        new AssignCommandCreator(context),
-                        new ExternalCommandCreator(context)
+                        new AssignCommandFactory(context),
+                        new ExternalCommandFactory(context)
                 ),
                 new PipeParser(),
                 new QuoteParser(),

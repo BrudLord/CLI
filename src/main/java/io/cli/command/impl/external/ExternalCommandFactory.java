@@ -1,17 +1,17 @@
 package io.cli.command.impl.external;
 
 import io.cli.command.Command;
-import io.cli.command.CommandCreator;
+import io.cli.command.CommandFactory;
 import io.cli.context.Context;
 import io.cli.parser.token.Token;
 
 import java.util.List;
 import java.util.Optional;
 
-public class ExternalCommandCreator implements CommandCreator {
+public class ExternalCommandFactory implements CommandFactory {
     private final Context context;
 
-    public ExternalCommandCreator(Context context) {
+    public ExternalCommandFactory(Context context) {
         this.context = context;
     }
 
