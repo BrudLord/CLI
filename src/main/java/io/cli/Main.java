@@ -5,6 +5,7 @@ import io.cli.command.impl.assign.AssignCommandFactory;
 import io.cli.command.impl.echo.EchoCommandFactory;
 import io.cli.command.impl.exit.ExitCommandFactory;
 import io.cli.command.impl.external.ExternalCommandFactory;
+import io.cli.command.impl.pwd.PwdCommandFactory;
 import io.cli.context.Context;
 import io.cli.exception.ExitException;
 import io.cli.executor.Executor;
@@ -48,6 +49,7 @@ public class Main {
                 new AssignCommandFactory(context),
                 new ExitCommandFactory(),
                 new EchoCommandFactory(),
+                new PwdCommandFactory(),
                 new ExternalCommandFactory(context)  // External command always should be the last
         );
 
