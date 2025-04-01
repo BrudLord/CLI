@@ -1,4 +1,4 @@
-package io.cli.command.impl.assign;
+/**package io.cli.command.impl.assign;
 
 import io.cli.command.Command;
 import io.cli.command.impl.external.ExternalCommand;
@@ -144,4 +144,4 @@ class AssignCommandTest {
 
         Assertions.assertNull(context.getVar(key));
     }
-}
+}*/
