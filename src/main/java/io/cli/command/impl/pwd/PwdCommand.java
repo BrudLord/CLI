@@ -1,50 +1,35 @@
-package io.cli.command.impl.echo;
+package io.cli.command.impl.pwd;
 
 import io.cli.command.Command;
-import io.cli.parser.token.Token;
-import io.cli.command.util.CommandErrorHandler;
 import io.cli.command.util.FileProcessor;
 
 import java.io.*;
-import java.util.List;
+import java.nio.file.Paths;
 
-public class EchoCommand implements Command {
-    private final List<Token> args;
-
+public class PwdCommand implements Command {
     private InputStream inputStream = System.in;
     private OutputStream outputStream = System.out;
 
-    public EchoCommand(List<Token> args) {
-        this.args = args;
-    }
+    public PwdCommand() {}
 
     /**
-     * Executes the `echo` command.
-     *  - The command prints the arguments passed to it.
-     * @return 0 on success, 1 on error.
+     * Executes the `pwd` command.
+     *  - The command prints the current working directory.
+     * @return 0 on success, 1 if there were file errors.
      */
     @Override
     public int execute() {
-        if (args.stream().anyMatch(t -> t.getInput().startsWith("-"))) {
-            return CommandErrorHandler.handleInvalidOption("echo");
-        }
-
-        // Use FileProcessor wrapper to avoid closing the standard output.
         OutputStream effectiveOutput = (outputStream == System.out || outputStream == System.err)
                 ? FileProcessor.nonCloseable(outputStream)
                 : outputStream;
-
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(effectiveOutput))) {
-            for (int idx = 1; idx < args.size(); idx++) {
-                writer.write(args.get(idx).getInput());
-            }
+            writer.write(Paths.get("").toAbsolutePath().toString());
             writer.newLine();
             writer.flush();
-            return 0;
         } catch (IOException e) {
-            CommandErrorHandler.handleFileError("echo", "output", e.getMessage());
             return 1;
         }
+        return 0;
     }
 
     /**
@@ -56,7 +41,6 @@ public class EchoCommand implements Command {
     public void setInputStream(InputStream newInputStream) {
         this.inputStream = newInputStream;
     }
-
 
     /**
      * Sets a new output stream for the command.
