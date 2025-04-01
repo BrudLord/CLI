@@ -84,7 +84,6 @@ public class GrepCommand implements Command, Callable<Integer> {
             finalRegex = "\\b" + pattern + "\\b";
         }
     
-        // Compile the pattern with correct flags.
         int flags = 0;
         if (ignoreCase) {
             flags = Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE;
@@ -97,7 +96,6 @@ public class GrepCommand implements Command, Callable<Integer> {
             return 1;
         }
     
-        // Wrap standard streams using FileProcessor wrappers.
         InputStream effectiveInput = (inputStream == System.in)
                 ? FileProcessor.nonCloseable(inputStream)
                 : inputStream;
@@ -106,7 +104,6 @@ public class GrepCommand implements Command, Callable<Integer> {
                 : outputStream;
     
         if (files == null || files.isEmpty()) {
-            // Read from standard input.
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(effectiveInput));
                  BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(effectiveOutput))) {
                 grepStream(reader, compiledPattern, writer);
@@ -116,7 +113,6 @@ public class GrepCommand implements Command, Callable<Integer> {
                 success = false;
             }
         } else {
-            // Read from each file; use one writer for all files.
             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(effectiveOutput))) {
                 for (String fileName : files) {
                     Path path = Paths.get(fileName);
@@ -157,7 +153,6 @@ public class GrepCommand implements Command, Callable<Integer> {
             return;
         }
     
-        // Collect indices of lines that match.
         Set<Integer> matchLineIndices = new TreeSet<>();
         for (int i = 0; i < lines.size(); i++) {
             Matcher matcher = pattern.matcher(lines.get(i));
