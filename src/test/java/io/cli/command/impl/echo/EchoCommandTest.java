@@ -1,9 +1,9 @@
 package io.cli.command.impl.echo;
 
 import io.cli.command.Command;
+import io.cli.exception.InvalidOptionException;
 import io.cli.parser.token.Token;
 import io.cli.parser.token.TokenType;
-import io.cli.command.util.CommandErrorHandler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ public class EchoCommandTest {
         int exitCode = echoCommand.execute();
         assertEquals(0, exitCode, "Valid echo should return 0 exit code");
         String output = outputStream.toString();
-        assertEquals("HelloWorld" + System.lineSeparator(), output, "Output should be concatenation of arguments with newline");
+        assertEquals("Hello World" + System.lineSeparator(), output, "Output should be space-concatenation of arguments with newline");
     }
 
     @Test
@@ -64,7 +64,6 @@ public class EchoCommandTest {
         Command echoCommand = new EchoCommand(Arrays.asList(echoToken, invalidArg));
         echoCommand.setOutputStream(outputStream);
 
-        int exitCode = echoCommand.execute();
-        assertNotEquals(0, exitCode, "Echo invoked with an option should return non-zero exit code");
+        assertThrows(InvalidOptionException.class, echoCommand::execute, "Echo invoked with an option should throw InvalidOptionException");
     }
 }

@@ -1,16 +1,19 @@
 package io.cli.command.impl.cat;
 
 import io.cli.command.Command;
+import io.cli.exception.InputException;
+import io.cli.exception.InvalidOptionException;
+import io.cli.exception.OutputException;
 import io.cli.parser.token.Token;
-import io.cli.command.util.CommandErrorHandler;
-import io.cli.command.util.FileProcessor;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 
 /**
- * The CatCommand class implements the `cat` command, which reads 
+ * The CatCommand class implements the `cat` command, which reads
  * from standard input or files and writes their content to standard output.
  */
 public class CatCommand implements Command {
@@ -39,52 +42,58 @@ public class CatCommand implements Command {
      */
     @Override
     public int execute() {
-        if (args.stream().anyMatch(t -> t.getInput().startsWith("-"))) {
-            return CommandErrorHandler.handleInvalidOption("cat");
+        for (var arg : args) {
+            if (arg.getInput().startsWith("-")) {
+                throw new InvalidOptionException(arg.getInput());
+            }
         }
-
-        boolean hasFileErrors = false;
-
-        InputStream effectiveInput = (inputStream == System.in)
-                ? FileProcessor.nonCloseable(inputStream)
-                : inputStream;
-        OutputStream effectiveOutput = (outputStream == System.out || outputStream == System.err)
-                ? FileProcessor.nonCloseable(outputStream)
-                : outputStream;
 
         if (args.size() == 1) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(effectiveInput));
-                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(effectiveOutput))) {
 
-                cat(reader, writer);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+            cat(reader, writer);
+
+            return 0;
+        }
+
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+
+        for (int i = 1; i < args.size(); i++) {
+
+            String filename = args.get(i).getInput();
+
+            try (BufferedReader fileReader = Files.newBufferedReader(Path.of(filename))) {
+                cat(fileReader, writer);
             } catch (IOException e) {
-                CommandErrorHandler.handleFileError("cat", "stdin/stdout", e.getMessage());
-                hasFileErrors = true;
-            }
-        } else {
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(effectiveOutput))) {
-                for (int i = 1; i < args.size(); i++) {
-                    String filename = args.get(i).getInput();
-                    try (BufferedReader fileReader = FileProcessor.getReader(filename)) {
-                        cat(fileReader, writer);
-                    } catch (IOException e) {
-                        CommandErrorHandler.handleFileError("cat", "input", e.getMessage());
-                        hasFileErrors = true;
-                    }
-                }
-            } catch (IOException e) {
-                CommandErrorHandler.handleFileError("cat", "output", e.getMessage());
-                hasFileErrors = true;
+                throw new InputException(e.getMessage());
             }
         }
 
-        return hasFileErrors ? 1 : 0;
+        return 0;
     }
 
-    private void cat(BufferedReader reader, BufferedWriter writer) throws IOException {
-        String line;
-        while ((line = reader.readLine()) != null) {
-            FileProcessor.writeOutput(writer, line);
+    private void cat(BufferedReader reader, BufferedWriter writer) {
+        while (true) {
+            String line;
+
+            try {
+                line = reader.readLine();
+            } catch (IOException e) {
+                throw new InputException(e.getMessage());
+            }
+
+            if (line == null) {
+                break;
+            }
+
+            try {
+                writer.write(line);
+                writer.newLine();
+                writer.flush();
+            } catch (IOException e) {
+                throw new OutputException(e.getMessage());
+            }
         }
     }
 

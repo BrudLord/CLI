@@ -2,6 +2,7 @@ package io.cli.executor;
 
 import io.cli.command.Command;
 import io.cli.context.Context;
+import io.cli.exception.PipeException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +17,7 @@ public class Executor {
         this.context = context;
     }
 
-    public void pipeAndExecuteCommands(List<Command> commands) throws IOException {
+    public void pipeAndExecuteCommands(List<Command> commands) {
         if (commands.isEmpty()) {
             return;
         }
@@ -29,12 +30,22 @@ public class Executor {
             Command command = commands.get(i);
 
             if (prevOutput != null) {
-                prevOutput.close();
+                try {
+                    prevOutput.close();
+                } catch (IOException e) {
+                    throw new PipeException(e.getMessage());
+                }
             }
 
             if (i < commands.size() - 1) {
                 prevOutput = new PipedOutputStream();
-                prevInput = new PipedInputStream(prevOutput);
+
+                try {
+                    prevInput = new PipedInputStream(prevOutput);
+                } catch (IOException e) {
+                    throw new PipeException(e.getMessage());
+                }
+
                 command.setOutputStream(prevOutput);
             } else {
                 command.setOutputStream(System.out);

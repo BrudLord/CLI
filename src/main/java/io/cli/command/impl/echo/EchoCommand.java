@@ -1,9 +1,9 @@
 package io.cli.command.impl.echo;
 
 import io.cli.command.Command;
+import io.cli.exception.InputException;
+import io.cli.exception.InvalidOptionException;
 import io.cli.parser.token.Token;
-import io.cli.command.util.CommandErrorHandler;
-import io.cli.command.util.FileProcessor;
 
 import java.io.*;
 import java.util.List;
@@ -11,7 +11,6 @@ import java.util.List;
 public class EchoCommand implements Command {
     private final List<Token> args;
 
-    private InputStream inputStream = System.in;
     private OutputStream outputStream = System.out;
 
     public EchoCommand(List<Token> args) {
@@ -20,30 +19,32 @@ public class EchoCommand implements Command {
 
     /**
      * Executes the `echo` command.
-     *  - The command prints the arguments passed to it.
+     * - The command prints the arguments passed to it.
+     *
      * @return 0 on success, 1 on error.
      */
     @Override
     public int execute() {
-        if (args.stream().anyMatch(t -> t.getInput().startsWith("-"))) {
-            return CommandErrorHandler.handleInvalidOption("echo");
+        for (var arg : args) {
+            if (arg.getInput().startsWith("-")) {
+                throw new InvalidOptionException(arg.getInput());
+            }
         }
 
-        // Use FileProcessor wrapper to avoid closing the standard output.
-        OutputStream effectiveOutput = (outputStream == System.out || outputStream == System.err)
-                ? FileProcessor.nonCloseable(outputStream)
-                : outputStream;
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+        try {
 
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(effectiveOutput))) {
-            for (int idx = 1; idx < args.size(); idx++) {
-                writer.write(args.get(idx).getInput());
-            }
+            List<String> words = args.stream().skip(1).map(Token::getInput).toList();
+            String output = String.join(" ", words);
+
+            writer.write(output);
             writer.newLine();
             writer.flush();
+
             return 0;
+
         } catch (IOException e) {
-            CommandErrorHandler.handleFileError("echo", "output", e.getMessage());
-            return 1;
+            throw new InputException(e.getMessage());
         }
     }
 
@@ -54,7 +55,6 @@ public class EchoCommand implements Command {
      */
     @Override
     public void setInputStream(InputStream newInputStream) {
-        this.inputStream = newInputStream;
     }
 
 

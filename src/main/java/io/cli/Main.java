@@ -2,10 +2,15 @@ package io.cli;
 
 import io.cli.command.CommandFactory;
 import io.cli.command.impl.assign.AssignCommandFactory;
+import io.cli.command.impl.cat.CatCommandFactory;
 import io.cli.command.impl.echo.EchoCommandFactory;
 import io.cli.command.impl.exit.ExitCommandFactory;
 import io.cli.command.impl.external.ExternalCommandFactory;
+import io.cli.command.impl.pwd.GrepCommandFactory;
+import io.cli.command.impl.pwd.PwdCommandFactory;
+import io.cli.command.impl.wc.WcCommandFactory;
 import io.cli.context.Context;
+import io.cli.exception.CLIException;
 import io.cli.exception.ExitException;
 import io.cli.executor.Executor;
 import io.cli.parser.ParserOrchestrator;
@@ -14,6 +19,7 @@ import io.cli.parser.innerparser.QuoteParser;
 import io.cli.parser.innerparser.Substitutor;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Main {
@@ -22,18 +28,28 @@ public class Main {
         MainOrchestrator mainOrchestrator = getMainOrchestrator(context);
 
         try (Scanner scanner = new Scanner(System.in)) {
+
             while (true) {
                 try {
+
                     System.out.print("> ");
                     String input = scanner.nextLine();
+
+                    if (scanner.ioException() != null) {
+                        System.out.println(scanner.ioException().getMessage());
+                        break;
+                    }
+
                     mainOrchestrator.processInput(input);
-                } catch (ExitException e) {
+
+                } catch (CLIException e) {
                     System.out.println(e.getMessage());
-                    break;
-                } catch (Throwable e) {
-                    e.printStackTrace(System.err);
+                    context.setVar("?", Integer.toString(e.getExitCode()));
                 }
             }
+
+        } catch (ExitException | NoSuchElementException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -46,9 +62,13 @@ public class Main {
 
         List<CommandFactory> commandFactories = List.of(
                 new AssignCommandFactory(context),
-                new ExitCommandFactory(),
+                new CatCommandFactory(),
                 new EchoCommandFactory(),
-                new ExternalCommandFactory(context)  // External command always should be the last
+                new ExitCommandFactory(),
+                new GrepCommandFactory(),
+                new PwdCommandFactory(),
+                new WcCommandFactory(),
+                new ExternalCommandFactory(context)  // External command always has to be the last
         );
 
         Executor executor = new Executor(context);

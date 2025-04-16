@@ -1,17 +1,16 @@
 package io.cli.command.impl.cat;
 
+import io.cli.exception.InputException;
 import io.cli.parser.token.Token;
 import io.cli.parser.token.TokenType;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 
-import io.cli.command.util.CommandErrorHandler;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,24 +25,13 @@ public class CatCommandTest {
     
     private Token catToken;
     private ByteArrayOutputStream outputStream;
-    private PrintStream originalErr;
-    private ByteArrayOutputStream errorStream;
-    
+
     @BeforeEach
     void setUp() {
         outputStream = new ByteArrayOutputStream();
-        errorStream = new ByteArrayOutputStream();
-        originalErr = System.err;
-        System.setErr(new PrintStream(errorStream));
-        CommandErrorHandler.setErrorStream(System.err);
         catToken = new Token(TokenType.COMMAND, "cat");
     }
     
-    @AfterEach
-    void tearDown() {
-        System.setErr(originalErr);
-    }
-
     private Path createTempFile(String fileName, String content) throws IOException {
         Path file = tempDir.resolve(fileName);
         Files.writeString(file, content);
@@ -55,7 +43,7 @@ public class CatCommandTest {
      * Verifies correct content is copied to output.
      */
     @Test
-    void testCatFromStandardInput() throws IOException {
+    void testCatFromStandardInput() {
         String inputContent = "Dance, dance, dance\nto the radio\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(inputContent.getBytes());
         
@@ -110,9 +98,8 @@ public class CatCommandTest {
         Path testFile = tempDir.resolve("missing.txt");
         CatCommand catCommand = new CatCommand(Arrays.asList(catToken, new Token(TokenType.COMMAND, testFile.toString())));
         catCommand.setOutputStream(outputStream);
-        
-        assertEquals(1, catCommand.execute());
-        assertTrue(errorStream.toString().contains("cat: input: " + testFile.toString()));
+
+        assertThrows(InputException.class, catCommand::execute, "Cat with invalid files should throw InputException");
     }
     
     /**
@@ -129,9 +116,7 @@ public class CatCommandTest {
                 new Token(TokenType.COMMAND, missingFile)));
         catCommand.setOutputStream(outputStream);
         
-        assertEquals(1, catCommand.execute());
-        assertTrue(errorStream.toString().contains("cat: input: " + missingFile));
-        assertEquals("file content\n", normalize(outputStream.toString()));
+        assertThrows(InputException.class, catCommand::execute, "Cat with invalid files should throw InputException");
     }
     
     /**
@@ -151,8 +136,7 @@ public class CatCommandTest {
         catCommand.setInputStream(errorInputStream);
         catCommand.setOutputStream(outputStream);
 
-        assertEquals(1, catCommand.execute());
-        assertTrue(errorStream.toString().contains("cat: stdin/stdout: "));
+        assertThrows(InputException.class, catCommand::execute, "Cat with IOException should throw InputException");
     }
     
     private String normalize(String text) {

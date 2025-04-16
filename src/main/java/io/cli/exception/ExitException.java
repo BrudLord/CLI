@@ -1,6 +1,6 @@
 package io.cli.exception;
 
-public class ExitException extends RuntimeException {
+public class ExitException extends CLIException {
     private final int exitCode;
 
     public ExitException(int exitCode) {

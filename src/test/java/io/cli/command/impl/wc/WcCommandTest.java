@@ -1,18 +1,19 @@
 package io.cli.command.impl.wc;
 
+import io.cli.exception.InputException;
 import io.cli.parser.token.Token;
-import java.util.regex.Pattern;
 import io.cli.parser.token.TokenType;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import io.cli.command.util.CommandErrorHandler;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,15 +29,11 @@ public class WcCommandTest {
     private Token wcToken;
     private ByteArrayOutputStream outputStream;
     private PrintStream originalErr;
-    private ByteArrayOutputStream errorStream;
 
     @BeforeEach
     void setUp() {
         outputStream = new ByteArrayOutputStream();
-        errorStream = new ByteArrayOutputStream();
         originalErr = System.err;
-        System.setErr(new PrintStream(errorStream));
-        CommandErrorHandler.setErrorStream(System.err);
         wcToken = new Token(TokenType.COMMAND, "wc");
     }
 
@@ -52,7 +49,7 @@ public class WcCommandTest {
     }
 
     @Test
-    void testWcFromStandardInput() throws IOException {
+    void testWcFromStandardInput() {
         String inputContent = "Hello world\nThis is a test\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(inputContent.getBytes());
 
@@ -90,7 +87,7 @@ public class WcCommandTest {
         String result = outputStream.toString();
         assertTrue(Pattern.compile("\\s*2\\s+2\\s+12\\s+" + Pattern.quote(file1.toString())).matcher(result).find());
         assertTrue(Pattern.compile("\\s*2\\s+2\\s+13\\s+" + Pattern.quote(file2.toString())).matcher(result).find());
-        assertTrue(Pattern.compile("\\s*4\\s+4\\s+25\\s+" + Pattern.quote("total".toString())).matcher(result).find());
+        assertTrue(Pattern.compile("\\s*4\\s+4\\s+25\\s+" + Pattern.quote("total")).matcher(result).find());
     }
 
     @Test
@@ -101,7 +98,7 @@ public class WcCommandTest {
 
         int exitCode = wcCommand.execute();
         assertEquals(1, exitCode);
-        String err = errorStream.toString();
+        String err = outputStream.toString();
         assertTrue(err.contains("wc:"), "Error stream should contain an error message");
         assertTrue(err.contains(missingFile.toString()), "Error message should contain missing file name");
     }
@@ -121,14 +118,13 @@ public class WcCommandTest {
         int exitCode = wcCommand.execute();
         assertEquals(1, exitCode);
         String result = outputStream.toString();
-        String err = errorStream.toString();
 
         assertTrue(result.contains("1"), "Output should contain line count for existing file");
         assertTrue(result.contains("2"), "Output should contain word count for existing file");
         assertTrue(result.contains("13"), "Output should contain byte count for existing file");
-        assertTrue(err.contains(missingFile), "Error stream should mention the missing file");
+        assertTrue(result.contains(missingFile), "Error stream should mention the missing file");
     }
-   
+
 
     @Test
     void testErrorInStandardInput() {
@@ -143,7 +139,6 @@ public class WcCommandTest {
         wcCommand.setInputStream(errorInputStream);
         wcCommand.setOutputStream(outputStream);
 
-        assertEquals(1, wcCommand.execute());
-        assertTrue(errorStream.toString().contains("wc: stdin/stdout: "));
+        assertThrows(InputException.class, wcCommand::execute, "Wc with IOException should throw InputException");
     }
 }

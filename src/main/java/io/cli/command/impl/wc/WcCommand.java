@@ -1,12 +1,14 @@
 package io.cli.command.impl.wc;
 
 import io.cli.command.Command;
+import io.cli.exception.InputException;
+import io.cli.exception.InvalidOptionException;
+import io.cli.exception.OutputException;
 import io.cli.parser.token.Token;
-import io.cli.command.util.CommandErrorHandler;
-import io.cli.command.util.FileProcessor;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 public class WcCommand implements Command {
@@ -28,51 +30,61 @@ public class WcCommand implements Command {
      */
     @Override
     public int execute() {
-        if (args.stream().anyMatch(t -> t.getInput().startsWith("-"))) {
-            return CommandErrorHandler.handleInvalidOption("wc");
+        for (var arg : args) {
+            if (arg.getInput().startsWith("-")) {
+                throw new InvalidOptionException(arg.getInput());
+            }
         }
 
-        boolean hasFileErrors = false;
-        List<long[]> allFileCounts = new ArrayList<>();
-        List<String> filenames = new ArrayList<>();
-        long[] totalCounts = new long[3];
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
 
         if (args.size() == 1) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            try {
                 long[] counts = count(reader);
                 writeCount(counts, "", writer);
             } catch (IOException e) {
-                CommandErrorHandler.handleFileError("wc", "stdin/stdout", e.getMessage());
-                hasFileErrors = true;
+                throw new InputException(e.getMessage());
             }
-        } else {
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
-                for (int i = 1; i < args.size(); i++) {
-                    String filename = args.get(i).getInput();
-                    filenames.add(filename);
 
-                    try (BufferedReader fileReader = FileProcessor.getReader(filename)) {
-                        long[] fileCounts = count(fileReader);
-                        allFileCounts.add(fileCounts);
-                        totalCounts[0] += fileCounts[0];
-                        totalCounts[1] += fileCounts[1];
-                        totalCounts[2] += fileCounts[2];
-                        writeCount(fileCounts, filename, writer);
-                    } catch (IOException e) {
-                        CommandErrorHandler.handleFileError("wc", "input", e.getMessage());
-                        hasFileErrors = true;
-                    }
-                }
+            return 0;
 
-                if (filenames.size() > 1) {
-                    writeCount(totalCounts, "total", writer);
-                }
+        }
+
+        boolean hasFileErrors = false;
+        long[] totalCounts = new long[3];
+
+        for (int i = 1; i < args.size(); i++) {
+
+            String filename = args.get(i).getInput();
+
+            try (BufferedReader fileReader = Files.newBufferedReader(Path.of(filename))) {
+
+                long[] fileCounts = count(fileReader);
+
+                totalCounts[0] += fileCounts[0];
+                totalCounts[1] += fileCounts[1];
+                totalCounts[2] += fileCounts[2];
+
+                writeCount(fileCounts, filename, writer);
+
             } catch (IOException e) {
-                CommandErrorHandler.handleFileError("wc", "output", e.getMessage());
+
+                try {
+                    writer.write("wc: " + e.getMessage());
+                    writer.newLine();
+                    writer.flush();
+                } catch (IOException ex) {
+                    throw new OutputException(ex.getMessage());
+                }
+
                 hasFileErrors = true;
             }
+        }
 
+        if (args.size() > 2) {
+            writeCount(totalCounts, "total", writer);
         }
 
         return hasFileErrors ? 1 : 0;
@@ -84,7 +96,7 @@ public class WcCommand implements Command {
 
         while ((line = reader.readLine()) != null) {
             lines++;
-            bytes += line.getBytes().length + 1; 
+            bytes += line.getBytes().length + 1;
             if (!line.trim().isEmpty()) {
                 words += line.trim().split("\\s+").length;
             }
@@ -93,9 +105,15 @@ public class WcCommand implements Command {
         return new long[]{lines, words, bytes};
     }
 
-    private void writeCount(long[] counts, String label, BufferedWriter writer) throws IOException {
+    private void writeCount(long[] counts, String label, BufferedWriter writer) {
         String output = String.format("%7d %7d %7d %s", counts[0], counts[1], counts[2], label);
-        FileProcessor.writeOutput(writer, output);
+        try {
+            writer.write(output);
+            writer.newLine();
+            writer.flush();
+        } catch (IOException e) {
+            throw new OutputException(e.getMessage());
+        }
     }
 
     /**
