@@ -33,11 +33,17 @@ public class Main {
                 try {
 
                     System.out.print("> ");
-                    String input = scanner.nextLine();
+
+                    String input;
+                    try {
+                        input = scanner.nextLine();
+                    } catch (NoSuchElementException ignored) {
+                        // System.in is closed so stop the loop and exit
+                        break;
+                    }
 
                     if (scanner.ioException() != null) {
-                        System.out.println(scanner.ioException().getMessage());
-                        break;
+                        throw scanner.ioException();
                     }
 
                     mainOrchestrator.processInput(input);
@@ -45,10 +51,14 @@ public class Main {
                 } catch (CLIException e) {
                     System.out.println(e.getMessage());
                     context.setVar("?", Integer.toString(e.getExitCode()));
+
+                    if (e instanceof ExitException) {
+                        break;
+                    }
                 }
             }
 
-        } catch (ExitException | NoSuchElementException e) {
+        } catch (Throwable e) {
             System.out.println(e.getMessage());
         }
     }
