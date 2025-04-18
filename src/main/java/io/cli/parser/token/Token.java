@@ -7,18 +7,24 @@ import java.util.Objects;
  * A token consists of a type and the associated input string.
  */
 public class Token {
-    private final TokenType type; // The type of the token (e.g., COMMAND, DOUBLE_QUOTES).
-    private final String input;  // The string value associated with the token.
+    /**
+     * The type of the token.
+     */
+    private final TokenType type;
+    /**
+     * The string value associated with the token.
+     */
+    private final String input;
 
     /**
      * Constructs a Token with the specified type and input string.
      *
-     * @param type  The type of the token.
-     * @param input The string value associated with the token.
+     * @param tokenType The type of the token.
+     * @param tokenInput The string value associated with the token.
      */
-    public Token(TokenType type, String input) {
-        this.type = type;
-        this.input = input;
+    public Token(final TokenType tokenType, final String tokenInput) {
+        this.type = tokenType;
+        this.input = tokenInput;
     }
 
     /**
@@ -43,14 +49,18 @@ public class Token {
      * Compares this token to the specified object for equality.
      *
      * @param obj The object to compare with.
-     * @return {@code true} if the specified object is equal to this token; {@code false} otherwise.
+     * @return {@code true} if the specified object is equal to this token;
      */
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true; // Check for reference equality.
-        if (obj == null || getClass() != obj.getClass()) return false; // Ensure type compatibility.
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
         Token token = (Token) obj;
-        return type == token.type && input.equals(token.input); // Compare fields.
+        return type == token.type && input.equals(token.input);
     }
 
     /**
@@ -70,9 +80,9 @@ public class Token {
      */
     @Override
     public String toString() {
-        return "Token{" +
-                "type=" + type +
-                ", input='" + input + '\'' +
-                '}';
+        return "Token{"
+                + "type=" + type
+                + ", input='" + input + '\''
+                + '}';
     }
 }

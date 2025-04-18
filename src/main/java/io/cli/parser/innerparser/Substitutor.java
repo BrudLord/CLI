@@ -55,11 +55,17 @@ public class Substitutor {
 
         while (i < str.length()) {
             if (startSubstitute) {
-                if (varBuilder.isEmpty() && (isAlphabetic(str.charAt(i)) || str.charAt(i) == '_')) {
+                if (varBuilder.isEmpty()
+                        && (isAlphabetic(str.charAt(i)) || str.charAt(i) == '_')
+                ) {
                     // Build first letter in var
                     varBuilder.append(str.charAt(i));
                     i++;
-                } else if (isAlphabetic(str.charAt(i)) || Character.isDigit(str.charAt(i)) || str.charAt(i) == '_' || str.charAt(i) == '?') {
+                } else if (isAlphabetic(str.charAt(i))
+                        || Character.isDigit(str.charAt(i))
+                        || str.charAt(i) == '_'
+                        || str.charAt(i) == '?'
+                ) {
                     // Continue building the variable name if it's valid.
                     varBuilder.append(str.charAt(i));
                     i++;
