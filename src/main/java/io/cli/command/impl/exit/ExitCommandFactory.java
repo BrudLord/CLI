@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class ExitCommandFactory implements CommandFactory {
+    /**
+     * Default constructor for ExitCommandFactory.
+     */
     public ExitCommandFactory() {
     }
 

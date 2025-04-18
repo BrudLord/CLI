@@ -4,7 +4,6 @@ import io.cli.command.Command;
 import io.cli.command.CommandFactory;
 import io.cli.parser.token.Token;
 
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +18,7 @@ public class PwdCommandFactory implements CommandFactory {
     }
 
     private static boolean checkArgs(List<Token> args) {
-        return !args.isEmpty() && "pwd".equals(args.get(0).getInput());
+        return !args.isEmpty() && "pwd".equals(args.getFirst().getInput());
     }
 
     /**

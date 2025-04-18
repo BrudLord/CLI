@@ -14,7 +14,7 @@ import java.util.Optional;
  * {@code variable=value}.
  */
 public class AssignCommandFactory implements CommandFactory {
-    private static final String assignCommandRegex = "^[a-zA-Z_][a-zA-Z0-9_]*=[^=]*$";
+    private static final String ASSIGN_COMMAND_REGEX = "^[a-zA-Z_][a-zA-Z0-9_]*=[^=]*$";
     private final Context context;
 
     /**
@@ -45,7 +45,7 @@ public class AssignCommandFactory implements CommandFactory {
 
         String token = args.getFirst().getInput();
 
-        if (!token.matches(assignCommandRegex)) {
+        if (!token.matches(ASSIGN_COMMAND_REGEX)) {
             return Optional.empty();
         }
 

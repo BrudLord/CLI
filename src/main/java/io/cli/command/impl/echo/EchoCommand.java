@@ -8,11 +8,20 @@ import io.cli.parser.token.Token;
 import java.io.*;
 import java.util.List;
 
+/**
+ * The EchoCommand class implements the `echo` command, which takes its arguments
+ * and writes them to standard output.
+ */
 public class EchoCommand implements Command {
     private final List<Token> args;
 
     private OutputStream outputStream = System.out;
 
+    /**
+     * Constructs an EchoCommand instance with the given list of arguments.
+     *
+     * @param args The list of tokens representing command-line arguments.
+     */
     public EchoCommand(List<Token> args) {
         this.args = args;
     }

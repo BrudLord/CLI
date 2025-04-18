@@ -10,11 +10,16 @@ public class PwdCommand implements Command {
     private InputStream inputStream = System.in;
     private OutputStream outputStream = System.out;
 
-    public PwdCommand() {}
+    /**
+     * Default constructor for PwdCommand.
+     */
+    public PwdCommand() {
+    }
 
     /**
      * Executes the `pwd` command.
-     *  - The command prints the current working directory.
+     * - The command prints the current working directory.
+     *
      * @return 0 on success, 1 if there were file errors.
      */
     @Override

@@ -12,10 +12,16 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class WcCommand implements Command {
+    private static final int TOTAL_COUNTS_LEN = 3;
     private final List<Token> args;
     private InputStream inputStream = System.in;
     private OutputStream outputStream = System.out;
 
+    /**
+     * Constructs an {@code WcCommand} instance with the given list of arguments.
+     *
+     * @param args The list of tokens representing command-line arguments.
+     */
     public WcCommand(List<Token> args) {
         this.args = args;
     }
@@ -53,7 +59,7 @@ public class WcCommand implements Command {
         }
 
         boolean hasFileErrors = false;
-        long[] totalCounts = new long[3];
+        long[] totalCounts = new long[TOTAL_COUNTS_LEN];
 
         for (int i = 1; i < args.size(); i++) {
 
@@ -91,7 +97,10 @@ public class WcCommand implements Command {
     }
 
     private long[] count(BufferedReader reader) throws IOException {
-        long lines = 0, words = 0, bytes = 0;
+        long lines = 0;
+        long words = 0;
+        long bytes = 0;
+
         String line;
 
         while ((line = reader.readLine()) != null) {

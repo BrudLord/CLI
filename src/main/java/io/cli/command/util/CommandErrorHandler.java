@@ -1,11 +1,15 @@
 package io.cli.command.util;
+
 import java.io.PrintStream;
 
 /**
  * Utility class for handling errors in command execution.
  */
-public class CommandErrorHandler {
-    private static final PrintStream errorStream = System.out;
+public final class CommandErrorHandler {
+    private static final PrintStream ERROR_STREAM = System.out;
+
+    private CommandErrorHandler() {
+    }
 
     /**
      * Prints an error message for file-related issues.
@@ -15,8 +19,8 @@ public class CommandErrorHandler {
      * @param message     The error message.
      */
     public static void handleFileError(String commandName, String filename, String message) {
-        errorStream.println("Error: " + commandName + ": " + filename + ": " + message);
-        errorStream.flush();
+        ERROR_STREAM.println("Error: " + commandName + ": " + filename + ": " + message);
+        ERROR_STREAM.flush();
     }
 
 
@@ -27,7 +31,7 @@ public class CommandErrorHandler {
      * @param message     The error message.
      */
     public static void handleGeneralError(String commandName, String message) {
-        errorStream.println("Error: " + commandName + ": " +  message);
-        errorStream.flush();
+        ERROR_STREAM.println("Error: " + commandName + ": " + message);
+        ERROR_STREAM.flush();
     }
 }

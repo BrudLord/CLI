@@ -1,66 +1,65 @@
 package io.cli.command.impl.grep;
 
+import io.cli.command.Command;
+import io.cli.command.util.CommandErrorHandler;
+import io.cli.command.util.FileProcessor;
 import io.cli.parser.token.Token;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
-import io.cli.command.util.FileProcessor;
-import io.cli.command.Command;
-import io.cli.command.util.CommandErrorHandler;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * The GrepCommand class implements a simplified grep-like command,
- * supporting:
- *   - Regular expressions
- *   - Whole-word matching (-w)
- *   - Case-insensitive search (-i)
- *   - Printing lines after a match (-A)
+ * The {@code GrepCommand} class implements a simplified grep-like command. Supported params:
+ * <ul>
+ * <li>Regular expressions</li>
+ * <li>Whole-word matching ({@code -w})</li>
+ * <li>Case-insensitive search ({@code -i})</li>
+ * <li>Printing lines after a match ({@code -A})</li>
+ * </ul>
  */
 @CommandLine.Command(
-    name = "grep",
-    description = "Search for patterns in files or input stream",
-    mixinStandardHelpOptions = true 
+        name = "grep",
+        description = "Search for patterns in files or input stream",
+        mixinStandardHelpOptions = true
 )
 public class GrepCommand implements Command, Callable<Integer> {
-    
+
+    private final List<Token> args;
     @Option(names = {"-w", "--word-regexp"}, description = "Match only whole words")
     private boolean wholeWord;
-    
     @Option(names = {"-i", "--ignore-case"}, description = "Ignore case distinctions")
     private boolean ignoreCase;
-    
     @Option(names = {"-A"}, description = "Print <n> lines after each match", paramLabel = "<n>")
     private int linesAfterMatch = 0;
-    
     @Parameters(index = "0", description = "Search pattern", arity = "1")
     private String pattern;
-    
     @Parameters(index = "1..*", description = "Input files (if empty, use stdin)")
     private List<String> files;
-    
-    private final List<Token> args;
     private InputStream inputStream = System.in;
     private OutputStream outputStream = System.out;
-    
+
     /**
      * Constructor for GrepCommand.
-     * 
+     *
      * @param args The arguments passed to the command.
      */
     public GrepCommand(List<Token> args) {
         this.args = args;
         new CommandLine(this).parseArgs(args.stream().map(Token::getInput).toArray(String[]::new));
     }
-    
+
     /**
      * Executes the `grep` command.
      *
@@ -70,7 +69,7 @@ public class GrepCommand implements Command, Callable<Integer> {
     public int execute() {
         return call();
     }
-    
+
     /**
      * The main entry point for the grep command via Picocli's Callable interface.
      *
@@ -83,7 +82,7 @@ public class GrepCommand implements Command, Callable<Integer> {
         if (wholeWord) {
             finalRegex = "\\b" + pattern + "\\b";
         }
-    
+
         int flags = 0;
         if (ignoreCase) {
             flags = Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE;
@@ -95,14 +94,14 @@ public class GrepCommand implements Command, Callable<Integer> {
             CommandErrorHandler.handleGeneralError("grep", "invalid regular expression: " + e.getMessage());
             return 1;
         }
-    
+
         InputStream effectiveInput = (inputStream == System.in)
                 ? FileProcessor.nonCloseable(inputStream)
                 : inputStream;
         OutputStream effectiveOutput = (outputStream == System.out || outputStream == System.err)
                 ? FileProcessor.nonCloseable(outputStream)
                 : outputStream;
-    
+
         if (files == null || files.isEmpty()) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(effectiveInput));
                  BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(effectiveOutput))) {
@@ -129,17 +128,17 @@ public class GrepCommand implements Command, Callable<Integer> {
                 success = false;
             }
         }
-    
+
         return success ? 0 : 1;
     }
-    
+
     /**
      * Reads all lines from the given reader, finds matches based on pattern,
      * and writes matching lines plus context lines to the provided writer.
-     * 
-     * @param reader   The BufferedReader to read input from.
-     * @param pattern  The compiled Pattern to match against.
-     * @param writer   The BufferedWriter for output.
+     *
+     * @param reader  The BufferedReader to read input from.
+     * @param pattern The compiled Pattern to match against.
+     * @param writer  The BufferedWriter for output.
      * @throws IOException If an I/O error occurs.
      */
     private void grepStream(BufferedReader reader, Pattern pattern, BufferedWriter writer) throws IOException {
@@ -148,11 +147,11 @@ public class GrepCommand implements Command, Callable<Integer> {
         while ((line = reader.readLine()) != null) {
             lines.add(line);
         }
-    
+
         if (lines.isEmpty()) {
             return;
         }
-    
+
         Set<Integer> matchLineIndices = new TreeSet<>();
         for (int i = 0; i < lines.size(); i++) {
             Matcher matcher = pattern.matcher(lines.get(i));
@@ -160,16 +159,16 @@ public class GrepCommand implements Command, Callable<Integer> {
                 matchLineIndices.add(i);
             }
         }
-    
+
         if (matchLineIndices.isEmpty()) {
             return;
         }
-    
+
         int lastPrintedLine = -1;
         for (int matchLine : matchLineIndices) {
             int fromLine = Math.max(matchLine, lastPrintedLine + 1);
             int toLine = Math.min(lines.size() - 1, matchLine + linesAfterMatch);
-    
+
             for (int j = fromLine; j <= toLine; j++) {
                 writer.write(lines.get(j));
                 writer.newLine();
@@ -177,22 +176,12 @@ public class GrepCommand implements Command, Callable<Integer> {
             lastPrintedLine = toLine;
         }
     }
-    
-    /**
-     * Sets a new input stream for the command.
-     *
-     * @param newInputStream The new input stream to use.
-     */
+
     @Override
     public void setInputStream(InputStream newInputStream) {
         this.inputStream = newInputStream;
     }
-    
-    /**
-     * Sets a new output stream for the command.
-     *
-     * @param newOutputStream The new output stream to use.
-     */
+
     @Override
     public void setOutputStream(OutputStream newOutputStream) {
         this.outputStream = newOutputStream;

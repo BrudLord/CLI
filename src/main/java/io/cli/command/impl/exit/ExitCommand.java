@@ -8,12 +8,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-public class ExitCommand implements Command {
+public final class ExitCommand implements Command {
     private final List<Token> args;
 
     private InputStream inputStream = System.in;
     private OutputStream outputStream = System.out;
 
+    /**
+     * Constructs an ExitCommand instance with the given list of arguments.
+     *
+     * @param args The list of tokens representing command-line arguments.
+     */
     public ExitCommand(List<Token> args) {
         this.args = args;
     }

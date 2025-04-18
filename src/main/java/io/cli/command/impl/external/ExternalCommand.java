@@ -24,6 +24,12 @@ public class ExternalCommand implements Command {
     private OutputStream outputStream = System.out;
     private final ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 
+    /**
+     * Constructs an {@code AssignCommand} with the specified context and list of arguments.
+     *
+     * @param context The {@code Context} where the variable will be stored.
+     * @param args   The list of CMD arguments.
+     */
     public ExternalCommand(Context context, List<String> args) {
         this.context = context;
         this.args = args;

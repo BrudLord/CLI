@@ -1,39 +1,12 @@
 package io.cli.command.util;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 /**
  * Utility class for file processing operations and stream wrappers.
  */
-public class FileProcessor {
-
-    /**
-     * Returns a BufferedReader for reading from a file.
-     *
-     * @param filename The name of the file to read.
-     * @return A BufferedReader for the file.
-     * @throws IOException If the file is a directory or cannot be read.
-     */
-    public static BufferedReader getReader(String filename) throws IOException {
-        Path path = Path.of(filename);
-        if (Files.isDirectory(path)) {
-            throw new IOException("Is a directory");
-        }
-        return Files.newBufferedReader(path);
-    }
-
-    /**
-     * Writes a line of output to the given BufferedWriter.
-     *
-     * @param writer The BufferedWriter to write to.
-     * @param output The output string to write.
-     * @throws IOException If an error occurs while writing.
-     */
-    public static void writeOutput(BufferedWriter writer, String output) throws IOException {
-        writer.write(output);
-        writer.newLine();
+public final class FileProcessor {
+    private FileProcessor() {
     }
 
     /**
@@ -79,7 +52,8 @@ public class FileProcessor {
     }
 
     /**
-     * NonCloseableOutputStream is a wrapper around an OutputStream that flushes on close but does not close the underlying stream.
+     * NonCloseableOutputStream is a wrapper around an OutputStream that flushes on close
+     * but does not close the underlying stream.
      */
     public static class NonCloseableOutputStream extends FilterOutputStream {
         /**

@@ -6,7 +6,7 @@ import io.cli.command.impl.cat.CatCommandFactory;
 import io.cli.command.impl.echo.EchoCommandFactory;
 import io.cli.command.impl.exit.ExitCommandFactory;
 import io.cli.command.impl.external.ExternalCommandFactory;
-import io.cli.command.impl.pwd.GrepCommandFactory;
+import io.cli.command.impl.grep.GrepCommandFactory;
 import io.cli.command.impl.pwd.PwdCommandFactory;
 import io.cli.command.impl.wc.WcCommandFactory;
 import io.cli.context.Context;
@@ -25,7 +25,7 @@ import java.util.Scanner;
 /**
  * Main class for running the CLI application.
  */
-public class Main {
+public final class Main {
     private Main() {
     }
 
