@@ -13,26 +13,10 @@
     - Для разбора аргументов командной строки используется библиотека `Picocli`. 
 
 ### Обоснование архитектурных решений
-См. файл [`Architectural_solutions.md`](dev/Architectural_solutions.md) для получения дополнительной информации.
-
+См. файл [`ARCHITECTUAL_SOLUTIONS.md`](dev/ARCHITECTUAL_SOLUTIONS.md) для получения дополнительной информации.
 
 ### Сборка и запуск
-Для сборки понадобиться `maven` (протестировано на версии `3.9.9`), а для запуска - `Java Runtime` версии `21` и выше.
-
-#### Сборка jar-архива
-```bash
-mvn clean package -DskipTests
-```
-
-#### Запуск
-```bash
-java -jar target/cli.jar
-```
-
-#### Запуск тестов
-```bash
-mvn clean test
-```
+См. файл [`BUILD.md`](dev/BUILD.md) для получения дополнительной информации.
 
 ### Contributing
 См. файл [`CONTRIBUTING.md`](CONTRIBUTING.md) для получения дополнительной информации.
