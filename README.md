@@ -32,6 +32,6 @@
 
 ### Авторы
 
-- Акимов Евгений (lottery7)
-- Кравцова Екатерина (bdmpea)
-- Шевченко Будимир (BrudLord)
+- [Будимир Шевченко](https://github.com/BrudLord)
+- [Евгений Акимов](https://github.com/lottery7)
+- [Екатерина Кравцова](https://github.com/bdmpea)
