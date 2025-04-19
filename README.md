@@ -39,6 +39,9 @@ java -jar target/cli.jar
 mvn clean test
 ```
 
+### Contributing
+См. файл [`CONTRIBUTING.md`](CONTRIBUTING.md) для получения дополнительной информации.
+
 ### License
 
 Проект распространяется под лицензией Apache-2.0. См. файл [`LICENSE`](LICENSE) для получения дополнительной информации.
