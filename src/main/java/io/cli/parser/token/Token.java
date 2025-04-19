@@ -15,6 +15,10 @@ public class Token {
      * The string value associated with the token.
      */
     private final String input;
+    /**
+     *
+     */
+    private boolean needToBeMerge = false;
 
     /**
      * Constructs a Token with the specified type and input string.
@@ -25,6 +29,19 @@ public class Token {
     public Token(final TokenType tokenType, final String tokenInput) {
         this.type = tokenType;
         this.input = tokenInput;
+    }
+
+    /**
+     * Constructs a Token with the specified type and input string.
+     *
+     * @param tokenType The type of the token.
+     * @param tokenInput The string value associated with the token.
+     * @param needToBeMerge The bool value which means should we merge this token with the next one
+     */
+    public Token(final TokenType tokenType, final String tokenInput, boolean needToBeMerge) {
+            this.type = tokenType;
+            this.input = tokenInput;
+            this.needToBeMerge = needToBeMerge;
     }
 
     /**
@@ -46,6 +63,15 @@ public class Token {
     }
 
     /**
+     * Returns the bool value which tell need we merge this token with next or not
+     *
+     * @return The input string of this token.
+     */
+    public boolean getNeedToBeMerge() {
+        return needToBeMerge;
+    }
+
+    /**
      * Compares this token to the specified object for equality.
      *
      * @param obj The object to compare with.
@@ -60,7 +86,7 @@ public class Token {
             return false;
         }
         Token token = (Token) obj;
-        return type == token.type && input.equals(token.input);
+        return type == token.type && input.equals(token.input) && needToBeMerge == token.needToBeMerge;
     }
 
     /**
@@ -70,7 +96,7 @@ public class Token {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(type, input);
+        return Objects.hash(type, input, needToBeMerge);
     }
 
     /**
@@ -83,6 +109,7 @@ public class Token {
         return "Token{"
                 + "type=" + type
                 + ", input='" + input + '\''
+                + ", needToBeMerge= '" + needToBeMerge + '\''
                 + '}';
     }
 }

@@ -24,18 +24,19 @@ public class QuoteParser {
         TokenType state = TokenType.COMMAND; // Tracks the current parsing state.
         char prev = ' '; // Tracks the previous character to handle escaping.
 
-        for (char c : input.toCharArray()) {
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            boolean needToMerge = i < input.length() - 1 && !Character.isSpaceChar(input.charAt(i + 1));
             if (prev == '\\') {
                 // Append the escaped character to the current token.
                 token.append(c);
             } else if (c == '"' || c == '\'') {
                 // Handle opening or closing quotes.
-                boolean isDouble = (c == '"');
-                TokenType quoteType = isDouble ? TokenType.DOUBLE_QUOTES : TokenType.SINGLE_QUOTES;
+                TokenType quoteType = (c == '"') ? TokenType.DOUBLE_QUOTES : TokenType.SINGLE_QUOTES;
 
                 if (state == quoteType) {
                     // If in a quoted state, closing the quote completes the token.
-                    tokens.add(new Token(state, token.toString()));
+                    tokens.add(new Token(state, token.toString(), needToMerge));
                     token.setLength(0);
                     state = TokenType.COMMAND; // Return to COMMAND state after closing the quote.
                 } else if (state != TokenType.COMMAND) {
@@ -44,7 +45,7 @@ public class QuoteParser {
                 } else {
                     // If not in a quoted state, start a new quoted token.
                     if (!token.isEmpty()) {
-                        tokens.add(new Token(state, token.toString()));
+                        tokens.add(new Token(state, token.toString(), needToMerge));
                         token.setLength(0);
                     }
                     state = quoteType; // Set the state to the current quote type.
