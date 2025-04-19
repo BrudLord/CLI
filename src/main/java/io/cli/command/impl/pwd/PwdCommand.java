@@ -1,13 +1,12 @@
 package io.cli.command.impl.pwd;
 
 import io.cli.command.Command;
-import io.cli.command.util.FileProcessor;
+import io.cli.exception.OutputException;
 
 import java.io.*;
 import java.nio.file.Paths;
 
 public class PwdCommand implements Command {
-    private InputStream inputStream = System.in;
     private OutputStream outputStream = System.out;
 
     /**
@@ -17,34 +16,28 @@ public class PwdCommand implements Command {
     }
 
     /**
-     * Executes the `pwd` command.
-     * - The command prints the current working directory.
-     *
-     * @return 0 on success, 1 if there were file errors.
+     * Executes the {@code pwd} command: prints the current working directory.
      */
     @Override
-    public int execute() {
-        OutputStream effectiveOutput = (outputStream == System.out || outputStream == System.err)
-                ? FileProcessor.nonCloseable(outputStream)
-                : outputStream;
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(effectiveOutput))) {
+    public void execute() {
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+        try {
             writer.write(Paths.get("").toAbsolutePath().toString());
             writer.newLine();
             writer.flush();
         } catch (IOException e) {
-            return 1;
+            throw new OutputException(e.getMessage());
         }
-        return 0;
     }
 
     /**
-     * Sets a new input stream for the command.
+     * Sets the input stream for this command.
+     * PwdCommand typically doesn't handle input, so this method does nothing.
      *
-     * @param newInputStream The new input stream to use.
+     * @param newInputStream Ignored by this method.
      */
     @Override
     public void setInputStream(InputStream newInputStream) {
-        this.inputStream = newInputStream;
     }
 
     /**

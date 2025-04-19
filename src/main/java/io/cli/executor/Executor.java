@@ -2,6 +2,7 @@ package io.cli.executor;
 
 import io.cli.command.Command;
 import io.cli.context.Context;
+import io.cli.exception.CLIException;
 import io.cli.exception.PipeException;
 
 import java.io.IOException;
@@ -69,12 +70,12 @@ public class Executor {
                 command.setInputStream(currentInput);
 
                 // Execute the command and retrieve its exit code.
-                int exitCode = command.execute();
-                context.setVar("?", Integer.toString(exitCode));
-
-                // If a command fails, terminate execution.
-                if (exitCode != 0) {
-                    return;
+                try {
+                    command.execute();
+                    context.setVar("?", "0");
+                } catch (CLIException e) {
+                    context.setVar("?", Integer.toString(e.getExitCode()));
+                    throw e;
                 }
 
                 // Update the current input stream for the next command.

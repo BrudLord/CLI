@@ -39,8 +39,7 @@ public class EchoCommandTest {
         Command echoCommand = new EchoCommand(Arrays.asList(echoToken, arg1, arg2));
         echoCommand.setOutputStream(outputStream);
 
-        int exitCode = echoCommand.execute();
-        assertEquals(0, exitCode, "Valid echo should return 0 exit code");
+        assertDoesNotThrow(echoCommand::execute, "Valid echo should return 0 exit code");
         String output = outputStream.toString();
         assertEquals("Hello World" + System.lineSeparator(), output, "Output should be space-concatenation of arguments with newline");
     }
@@ -51,8 +50,7 @@ public class EchoCommandTest {
         Command echoCommand = new EchoCommand(Collections.singletonList(echoToken));
         echoCommand.setOutputStream(outputStream);
 
-        int exitCode = echoCommand.execute();
-        assertEquals(0, exitCode, "Even with no arguments, echo should return 0 exit code");
+        assertDoesNotThrow(echoCommand::execute, "Even with no arguments, echo should return 0 exit code");
         String output = outputStream.toString();
         assertEquals(System.lineSeparator(), output, "Output should be just a newline when no arguments are provided");
     }

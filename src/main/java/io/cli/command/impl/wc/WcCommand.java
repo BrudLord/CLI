@@ -3,6 +3,7 @@ package io.cli.command.impl.wc;
 import io.cli.command.Command;
 import io.cli.exception.InputException;
 import io.cli.exception.InvalidOptionException;
+import io.cli.exception.NonZeroExitCodeException;
 import io.cli.exception.OutputException;
 import io.cli.parser.token.Token;
 
@@ -31,11 +32,9 @@ public class WcCommand implements Command {
      * - If no filenames are provided, reads from standard input.
      * - Otherwise, it counts lines, words, and bytes in the input files.
      * - Handles invalid options and missing files gracefully.
-     *
-     * @return 0 on success, 1 if there were file errors, and 2 for invalid options.
      */
     @Override
-    public int execute() {
+    public void execute() {
         for (var arg : args) {
             if (arg.getInput().startsWith("-")) {
                 throw new InvalidOptionException(arg.getInput());
@@ -54,7 +53,7 @@ public class WcCommand implements Command {
                 throw new InputException(e.getMessage());
             }
 
-            return 0;
+            return;
 
         }
 
@@ -93,7 +92,9 @@ public class WcCommand implements Command {
             writeCount(totalCounts, "total", writer);
         }
 
-        return hasFileErrors ? 1 : 0;
+        if (hasFileErrors) {
+            throw new NonZeroExitCodeException(1);
+        }
     }
 
     private long[] count(BufferedReader reader) throws IOException {

@@ -63,7 +63,6 @@ public final class Main {
                 } catch (CLIException e) {
                     // Handle custom CLI exceptions, display error messages, and update exit code variable.
                     System.out.println(e.getMessage());
-                    context.setVar("?", Integer.toString(e.getExitCode()));
 
                     if (e instanceof ExitException) {
                         // Break the loop on exit command.
@@ -89,7 +88,7 @@ public final class Main {
         QuoteParser quoteParser = new QuoteParser();
         Substitutor substitutor = new Substitutor();
 
-        // Setup the parser orchestrator with the parsers and shared context.
+        // Set up the parser orchestrator with the parsers and shared context.
         ParserOrchestrator parserOrchestrator = new ParserOrchestrator(pipeParser, quoteParser, substitutor, context);
 
         // Define the available command factories.

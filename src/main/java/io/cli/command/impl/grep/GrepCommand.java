@@ -3,6 +3,7 @@ package io.cli.command.impl.grep;
 import io.cli.command.Command;
 import io.cli.command.util.CommandErrorHandler;
 import io.cli.command.util.FileProcessor;
+import io.cli.exception.NonZeroExitCodeException;
 import io.cli.parser.token.Token;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
@@ -61,13 +62,14 @@ public class GrepCommand implements Command, Callable<Integer> {
     }
 
     /**
-     * Executes the `grep` command.
-     *
-     * @return 0 if successful, otherwise 1 if any error (e.g. file I/O) occurred.
+     * Executes the {@code grep} command.
      */
     @Override
-    public int execute() {
-        return call();
+    public void execute() {
+        int exitCode = call();
+        if (exitCode != 0) {
+            throw new NonZeroExitCodeException(exitCode);
+        }
     }
 
     /**

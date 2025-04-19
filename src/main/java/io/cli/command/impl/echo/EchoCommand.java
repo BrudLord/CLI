@@ -27,13 +27,10 @@ public class EchoCommand implements Command {
     }
 
     /**
-     * Executes the `echo` command.
-     * - The command prints the arguments passed to it.
-     *
-     * @return 0 on success, 1 on error.
+     * Executes the {@code echo} command: prints the arguments passed to it.
      */
     @Override
-    public int execute() {
+    public void execute() {
         for (var arg : args) {
             if (arg.getInput().startsWith("-")) {
                 throw new InvalidOptionException(arg.getInput());
@@ -50,17 +47,16 @@ public class EchoCommand implements Command {
             writer.newLine();
             writer.flush();
 
-            return 0;
-
         } catch (IOException e) {
             throw new InputException(e.getMessage());
         }
     }
 
     /**
-     * Sets a new input stream for the command.
+     * Sets the input stream for this command.
+     * PwdCommand typically doesn't handle input, so this method does nothing.
      *
-     * @param newInputStream The new input stream to use.
+     * @param newInputStream Ignored by this method.
      */
     @Override
     public void setInputStream(InputStream newInputStream) {

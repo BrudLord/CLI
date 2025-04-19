@@ -33,15 +33,14 @@ public class CatCommand implements Command {
 
 
     /**
-     * Executes the `cat` command.
-     * - If no filenames are provided, reads from standard input.
-     * - Otherwise, reads from the specified files and writes their content to standard output.
-     * - Handles invalid options and missing files gracefully.
-     *
-     * @return 0 on success, 1 if there were file errors, and 2 for invalid options.
+     * Executes the {@code cat} command.
+     * <ul>
+     *     <li>If no filenames are provided, reads from standard input.</li>
+     *     <li>Otherwise, reads from the specified files and writes their content to standard output.</li>
+     * </ul>
      */
     @Override
-    public int execute() {
+    public void execute() {
         for (var arg : args) {
             if (arg.getInput().startsWith("-")) {
                 throw new InvalidOptionException(arg.getInput());
@@ -54,7 +53,7 @@ public class CatCommand implements Command {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
             cat(reader, writer);
 
-            return 0;
+            return;
         }
 
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
@@ -69,8 +68,6 @@ public class CatCommand implements Command {
                 throw new InputException(e.getMessage());
             }
         }
-
-        return 0;
     }
 
     private void cat(BufferedReader reader, BufferedWriter writer) {

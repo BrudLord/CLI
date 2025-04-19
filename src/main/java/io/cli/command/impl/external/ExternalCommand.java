@@ -2,10 +2,7 @@ package io.cli.command.impl.external;
 
 import io.cli.command.Command;
 import io.cli.context.Context;
-import io.cli.exception.CLIException;
-import io.cli.exception.ChildProcessException;
-import io.cli.exception.InputException;
-import io.cli.exception.OutputException;
+import io.cli.exception.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,15 +17,15 @@ public class ExternalCommand implements Command {
     private final Context context;
     private final List<String> args;
     private final ExecutorService transfersExecutorService = Executors.newFixedThreadPool(3);
+    private final ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
     private InputStream inputStream = System.in;
     private OutputStream outputStream = System.out;
-    private final ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 
     /**
      * Constructs an {@code AssignCommand} with the specified context and list of arguments.
      *
      * @param context The {@code Context} where the variable will be stored.
-     * @param args   The list of CMD arguments.
+     * @param args    The list of CMD arguments.
      */
     public ExternalCommand(Context context, List<String> args) {
         this.context = context;
@@ -91,7 +88,7 @@ public class ExternalCommand implements Command {
     }
 
     @Override
-    public int execute() {
+    public void execute() {
         try {
             Process process = createAndStartProcess();
 
@@ -103,7 +100,9 @@ public class ExternalCommand implements Command {
                 throw new ChildProcessException(errors, exitCode);
             }
 
-            return exitCode;
+            if (exitCode != 0) {
+                throw new NonZeroExitCodeException(exitCode);
+            }
 
         } catch (IOException | InterruptedException e) {
             throw new CLIException(e.getMessage());

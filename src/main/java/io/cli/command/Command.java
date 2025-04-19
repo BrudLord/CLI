@@ -9,11 +9,8 @@ import java.io.OutputStream;
 public interface Command {
     /**
      * Executes the command.
-     *
-     * @return The exit code of the command. Conventionally, 0 indicates success,
-     * and non-zero values indicate some error.
      */
-    int execute();
+    void execute();
 
     /**
      * Sets the input stream for the command. This allows the command to receive

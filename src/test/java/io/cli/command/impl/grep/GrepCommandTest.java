@@ -2,15 +2,19 @@ package io.cli.command.impl.grep;
 
 import io.cli.parser.token.Token;
 import io.cli.parser.token.TokenType;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,8 +56,7 @@ public class GrepCommandTest {
         grepCommand.setInputStream(inputStream);
         grepCommand.setOutputStream(outputStream);
 
-        int exitCode = grepCommand.execute();
-        assertEquals(0, exitCode, "Grep should succeed on standard input");
+        assertDoesNotThrow(grepCommand::execute, "Grep should succeed on standard input");
 
         String result = outputStream.toString();
         String[] lines = result.split(System.lineSeparator());
@@ -80,8 +83,7 @@ public class GrepCommandTest {
         );
         grepCommand.setOutputStream(outputStream);
 
-        int exitCode = grepCommand.execute();
-        assertEquals(0, exitCode, "Grep should succeed for single file input");
+        assertDoesNotThrow(grepCommand::execute, "Grep should succeed for single file input");
 
         String result = outputStream.toString();
         assertTrue(result.contains("Line two with pattern"), "Output should contain the matching line");
@@ -104,8 +106,7 @@ public class GrepCommandTest {
         grepCommand.setInputStream(inputStream);
         grepCommand.setOutputStream(outputStream);
 
-        int exitCode = grepCommand.execute();
-        assertEquals(0, exitCode, "Grep with -i should succeed");
+        assertDoesNotThrow(grepCommand::execute, "Grep with -i should succeed");
 
         String result = outputStream.toString();
         String[] lines = result.split(System.lineSeparator());
@@ -129,8 +130,7 @@ public class GrepCommandTest {
         grepCommand.setInputStream(inputStream);
         grepCommand.setOutputStream(outputStream);
 
-        int exitCode = grepCommand.execute();
-        assertEquals(0, exitCode, "Grep with -w should succeed");
+        assertDoesNotThrow(grepCommand::execute, "Grep with -w should succeed");
 
         String result = outputStream.toString();
         String[] lines = result.split(System.lineSeparator());
@@ -156,8 +156,7 @@ public class GrepCommandTest {
         grepCommand.setInputStream(inputStream);
         grepCommand.setOutputStream(outputStream);
 
-        int exitCode = grepCommand.execute();
-        assertEquals(0, exitCode, "Grep with context (-A) should succeed");
+        assertDoesNotThrow(grepCommand::execute, "Grep with context (-A) should succeed");
 
         String result = outputStream.toString();
         String[] lines = result.split(System.lineSeparator());

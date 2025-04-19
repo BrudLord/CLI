@@ -31,13 +31,10 @@ public class AssignCommand implements Command {
     /**
      * Executes the assignment command. It sets the given key-value pair in the
      * associated {@code Context}.
-     *
-     * @return 0, indicating successful execution.
      */
     @Override
-    public int execute() {
+    public void execute() {
         context.setVar(key, value);
-        return 0;
     }
 
     /**

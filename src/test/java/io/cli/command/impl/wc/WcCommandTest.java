@@ -1,5 +1,6 @@
 package io.cli.command.impl.wc;
 
+import io.cli.exception.CLIException;
 import io.cli.exception.InputException;
 import io.cli.parser.token.Token;
 import io.cli.parser.token.TokenType;
@@ -57,7 +58,7 @@ public class WcCommandTest {
         wcCommand.setInputStream(inputStream);
         wcCommand.setOutputStream(outputStream);
 
-        assertEquals(0, wcCommand.execute());
+        assertDoesNotThrow(wcCommand::execute);
         assertTrue(outputStream.toString().matches("\\s*2\\s+6\\s+27\\s*"));
     }
 
@@ -83,7 +84,7 @@ public class WcCommandTest {
                 new Token(TokenType.COMMAND, file2.toString())));
         wcCommand.setOutputStream(outputStream);
 
-        assertEquals(0, wcCommand.execute());
+        assertDoesNotThrow(wcCommand::execute);
         String result = outputStream.toString();
         assertTrue(Pattern.compile("\\s*2\\s+2\\s+12\\s+" + Pattern.quote(file1.toString())).matcher(result).find());
         assertTrue(Pattern.compile("\\s*2\\s+2\\s+13\\s+" + Pattern.quote(file2.toString())).matcher(result).find());
@@ -96,8 +97,9 @@ public class WcCommandTest {
         WcCommand wcCommand = new WcCommand(Arrays.asList(wcToken, new Token(TokenType.COMMAND, missingFile.toString())));
         wcCommand.setOutputStream(outputStream);
 
-        int exitCode = wcCommand.execute();
-        assertEquals(1, exitCode);
+        CLIException e = assertThrows(CLIException.class, wcCommand::execute);
+        assertEquals(1, e.getExitCode());
+
         String err = outputStream.toString();
         assertTrue(err.contains("wc:"), "Error stream should contain an error message");
         assertTrue(err.contains(missingFile.toString()), "Error message should contain missing file name");
@@ -115,8 +117,9 @@ public class WcCommandTest {
         ));
         wcCommand.setOutputStream(outputStream);
 
-        int exitCode = wcCommand.execute();
-        assertEquals(1, exitCode);
+        CLIException e = assertThrows(CLIException.class, wcCommand::execute);
+        assertEquals(1, e.getExitCode());
+
         String result = outputStream.toString();
 
         assertTrue(result.contains("1"), "Output should contain line count for existing file");
