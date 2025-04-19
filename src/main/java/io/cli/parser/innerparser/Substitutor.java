@@ -32,7 +32,13 @@ public class Substitutor {
                 result.add(token);
             } else {
                 // Substitute variables for other token types.
-                result.add(new Token(token.getType(), substituteVariables(token.getInput(), context), token.getNeedToBeMerge()));
+                result.add(
+                        new Token(
+                                token.getType(),
+                                substituteVariables(token.getInput(), context),
+                                token.getNeedToBeMerge()
+                        )
+                );
             }
         }
 

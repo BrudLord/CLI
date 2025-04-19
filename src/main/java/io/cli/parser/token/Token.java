@@ -63,7 +63,7 @@ public class Token {
     }
 
     /**
-     * Returns the bool value which tell need we merge this token with next or not
+     * Returns the bool value which tell need we merge this token with next or not.
      *
      * @return The input string of this token.
      */
