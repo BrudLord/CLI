@@ -13,10 +13,10 @@
     - Для разбора аргументов командной строки используется библиотека `Picocli`. 
 
 ### Обоснование архитектурных решений
-См. файл [`ARCHITECTUAL_SOLUTIONS.md`](dev/ARCHITECTUAL_SOLUTIONS.md) для получения дополнительной информации.
+См. файл [`ARCHITECTUAL_SOLUTIONS.md`](docs/ARCHITECTUAL_SOLUTIONS.md) для получения дополнительной информации.
 
 ### Сборка и запуск
-См. файл [`BUILD.md`](dev/BUILD.md) для получения дополнительной информации.
+См. файл [`BUILD.md`](docs/BUILD.md) для получения дополнительной информации.
 
 ### Contributing
 См. файл [`CONTRIBUTING.md`](CONTRIBUTING.md) для получения дополнительной информации.
