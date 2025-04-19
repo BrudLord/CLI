@@ -1,5 +1,6 @@
 package io.cli.parser.innerparser;
 
+import io.cli.exception.InputException;
 import io.cli.parser.token.Token;
 import io.cli.parser.token.TokenType;
 
@@ -32,9 +33,10 @@ public class PipeParser {
         }
 
         // Add the final group if it's not empty.
-        if (!current.isEmpty()) {
-            tokens.add(List.copyOf(current));
+        if (current.isEmpty()) {
+            throw new InputException("You should write a command after PIPE");
         }
+        tokens.add(List.copyOf(current));
 
         return tokens;
     }
@@ -55,6 +57,9 @@ public class PipeParser {
                 if (!currentToken.isEmpty()) {
                     current.add(new Token(TokenType.COMMAND, currentToken.toString()));
                     currentToken.setLength(0); // Clear the token builder.
+                }
+                if (current.isEmpty()) {
+                    throw new InputException("You should write a command after PIPE");
                 }
                 // Add the current group to the list and start a new group.
                 tokens.add(List.copyOf(current));
