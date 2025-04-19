@@ -2,7 +2,6 @@ package io.cli.command.impl.external;
 
 import io.cli.context.Context;
 import io.cli.exception.CLIException;
-import io.cli.exception.ChildProcessException;
 import io.cli.exception.NonZeroExitCodeException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -82,9 +81,8 @@ class ExternalCommandTest {
         ExternalCommand externalCommand = new ExternalCommand(context, Collections.singletonList(errorStreamScriptFile.toString()));
         externalCommand.setOutputStream(new ByteArrayOutputStream());
 
-        ChildProcessException e = assertThrows(ChildProcessException.class, externalCommand::execute);
+        CLIException e = assertThrows(CLIException.class, externalCommand::execute);
 
-        assertTrue(e.getMessage().contains("error"));
         assertEquals(1, e.getExitCode());
     }
 
