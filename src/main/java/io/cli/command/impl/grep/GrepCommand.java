@@ -1,8 +1,6 @@
 package io.cli.command.impl.grep;
 
 import io.cli.command.Command;
-import io.cli.command.util.CommandErrorHandler;
-import io.cli.command.util.FileProcessor;
 import io.cli.exception.InputException;
 import io.cli.exception.InvalidOptionException;
 import io.cli.exception.NonZeroExitCodeException;
@@ -60,7 +58,12 @@ public class GrepCommand implements Command, Callable<Integer> {
      */
     public GrepCommand(List<Token> args) {
         this.args = args;
-        new CommandLine(this).parseArgs(args.stream().skip(1).map(Token::getInput).toArray(String[]::new));
+        new CommandLine(this).parseArgs(args
+                .stream()
+                .skip(1)
+                .map(Token::getInput)
+                .toArray(String[]::new)
+        );
     }
 
     /**
@@ -113,7 +116,7 @@ public class GrepCommand implements Command, Callable<Integer> {
                     try (BufferedReader reader = Files.newBufferedReader(path)) {
                         grepStream(reader, compiledPattern, writer);
                     } catch (IOException e) {
-                        throw new InputException("Have problem with file: " + fileName + ", problem: " + e.getMessage());
+                        throw new InputException("Have problem in file: " + fileName + ", problem: " + e.getMessage());
                     }
                 }
                 writer.flush();
