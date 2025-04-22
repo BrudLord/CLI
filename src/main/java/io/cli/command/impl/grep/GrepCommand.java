@@ -3,6 +3,8 @@ package io.cli.command.impl.grep;
 import io.cli.command.Command;
 import io.cli.command.util.CommandErrorHandler;
 import io.cli.command.util.FileProcessor;
+import io.cli.exception.InputException;
+import io.cli.exception.InvalidOptionException;
 import io.cli.exception.NonZeroExitCodeException;
 import io.cli.parser.token.Token;
 import picocli.CommandLine;
@@ -58,7 +60,7 @@ public class GrepCommand implements Command, Callable<Integer> {
      */
     public GrepCommand(List<Token> args) {
         this.args = args;
-        new CommandLine(this).parseArgs(args.stream().map(Token::getInput).toArray(String[]::new));
+        new CommandLine(this).parseArgs(args.stream().skip(1).map(Token::getInput).toArray(String[]::new));
     }
 
     /**
@@ -79,7 +81,6 @@ public class GrepCommand implements Command, Callable<Integer> {
      */
     @Override
     public Integer call() {
-        boolean success = true;
         String finalRegex = pattern;
         if (wholeWord) {
             finalRegex = "\\b" + pattern + "\\b";
@@ -93,45 +94,35 @@ public class GrepCommand implements Command, Callable<Integer> {
         try {
             compiledPattern = Pattern.compile(finalRegex, flags);
         } catch (Exception e) {
-            CommandErrorHandler.handleGeneralError("grep", "invalid regular expression: " + e.getMessage());
-            return 1;
+            throw new InvalidOptionException("Invalid regular expression: " + e.getMessage());
         }
-
-        InputStream effectiveInput = (inputStream == System.in)
-                ? FileProcessor.nonCloseable(inputStream)
-                : inputStream;
-        OutputStream effectiveOutput = (outputStream == System.out || outputStream == System.err)
-                ? FileProcessor.nonCloseable(outputStream)
-                : outputStream;
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
 
         if (files == null || files.isEmpty()) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(effectiveInput));
-                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(effectiveOutput))) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            try {
                 grepStream(reader, compiledPattern, writer);
                 writer.flush();
             } catch (IOException e) {
-                CommandErrorHandler.handleFileError("grep", "stdin/stdout", e.getMessage());
-                success = false;
+                throw new InputException(e.getMessage());
             }
         } else {
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(effectiveOutput))) {
+            try {
                 for (String fileName : files) {
                     Path path = Paths.get(fileName);
                     try (BufferedReader reader = Files.newBufferedReader(path)) {
                         grepStream(reader, compiledPattern, writer);
                     } catch (IOException e) {
-                        CommandErrorHandler.handleFileError("grep", fileName, e.getMessage());
-                        success = false;
+                        throw new InputException("Have problem with file: " + fileName + ", problem: " + e.getMessage());
                     }
                 }
                 writer.flush();
             } catch (IOException e) {
-                CommandErrorHandler.handleFileError("grep", "output", e.getMessage());
-                success = false;
+                throw new InputException("Have output: " + e.getMessage());
             }
         }
 
-        return success ? 0 : 1;
+        return 0;
     }
 
     /**
