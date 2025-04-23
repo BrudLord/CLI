@@ -38,7 +38,9 @@ public class Executor {
      * @throws PipeException if there is an issue creating or closing pipes.
      */
     public void pipeAndExecuteCommands(List<Command> commands) {
-        if (commands.isEmpty()) return;
+        if (commands.isEmpty()) {
+            return;
+        }
 
         List<PipedOutputStream> outputStreams = new ArrayList<>();
         List<PipedInputStream> inputStreams = new ArrayList<>();
@@ -108,7 +110,9 @@ public class Executor {
             // Close all pipes
             try {
                 for (PipedInputStream in : inputStreams) {
-                    if (in != null) in.close();
+                    if (in != null) {
+                        in.close();
+                    }
                 }
             } catch (IOException e) {
                 throw new PipeException(e.getMessage());
