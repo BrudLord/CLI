@@ -86,10 +86,10 @@ public class GrepCommand implements Command, Callable<Integer> {
     public Integer call() {
         String finalRegex = pattern;
         if (wholeWord) {
-            finalRegex = "\\b" + pattern + "\\b";
+            finalRegex = "(?<!\\p{L})" + pattern + "(?!\\p{L})";
         }
 
-        int flags = 0;
+        int flags = Pattern.UNICODE_CHARACTER_CLASS;
         if (ignoreCase) {
             flags = Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE;
         }
