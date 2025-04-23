@@ -9,7 +9,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Executes a list of commands, handling piping between them.
@@ -33,64 +38,77 @@ public class Executor {
      * @throws PipeException if there is an issue creating or closing pipes.
      */
     public void pipeAndExecuteCommands(List<Command> commands) {
-        if (commands.isEmpty()) {
-            return;
-        }
+        if (commands.isEmpty()) return;
 
-        InputStream currentInput = System.in;
-        PipedOutputStream prevOutput = null;
-        PipedInputStream prevInput = null;
+        List<PipedOutputStream> outputStreams = new ArrayList<>();
+        List<PipedInputStream> inputStreams = new ArrayList<>();
 
-        try {
-            for (int i = 0; i < commands.size(); i++) {
-                Command command = commands.get(i);
 
-                // Close the previous output stream.
-                if (prevOutput != null) {
-                    prevOutput.close();
-                }
+        List<Future<Void>> futures = new ArrayList<>();
 
-                // Set up a new pipe if this is not the last command.
-                if (i < commands.size() - 1) {
-                    prevOutput = new PipedOutputStream();
-
-                    try {
-                        prevInput = new PipedInputStream(prevOutput);
-                    } catch (IOException e) {
-                        throw new PipeException(e.getMessage());
-                    }
-
-                    command.setOutputStream(prevOutput);
-                } else {
-                    // For the last command, set output to System.out.
-                    command.setOutputStream(System.out);
-                }
-
-                // Set the input stream for the command.
-                command.setInputStream(currentInput);
-
-                // Execute the command and retrieve its exit code.
-                try {
-                    command.execute();
-                    context.setVar("?", "0");
-                } catch (CLIException e) {
-                    context.setVar("?", Integer.toString(e.getExitCode()));
-                    throw e;
-                }
-
-                // Update the current input stream for the next command.
-                currentInput = prevInput;
+        try (ExecutorService executor = Executors.newFixedThreadPool(commands.size())) {
+            for (int i = 0; i < commands.size() - 1; i++) {
+                PipedOutputStream out = new PipedOutputStream();
+                PipedInputStream in = new PipedInputStream(out);
+                outputStreams.add(out);
+                inputStreams.add(in);
             }
-        } catch (IOException e) {
+
+            outputStreams.add(null);  // Last command: output = System.out
+//            inputStreams.add(null);
+
+            for (int i = 0; i < commands.size(); i++) {
+                final Command command = commands.get(i);
+
+                InputStream inputStream = (i == 0) ? System.in : inputStreams.get(i - 1);
+                PipedOutputStream outputStream = outputStreams.get(i);
+
+                command.setInputStream(inputStream);
+                command.setOutputStream(outputStream != null ? outputStream : System.out);
+
+                Future<Void> future = executor.submit(() -> {
+                    try {
+                        command.execute();
+                        return null;
+                    } catch (CLIException e) {
+                        context.setVar("?", Integer.toString(e.getExitCode()));
+                        throw e;
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    } finally {
+                        if (outputStream != null) {
+                            try {
+                                outputStream.close();
+                            } catch (IOException ignored) {
+                            }
+                        }
+                    }
+                });
+
+                futures.add(future);
+            }
+
+            // Waiting for all commands to stop
+            for (Future<Void> future : futures) {
+                future.get();  // Also throws exceptions from commands
+            }
+
+            context.setVar("?", "0");
+
+        } catch (IOException | InterruptedException e) {
             throw new PipeException(e.getMessage());
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof CLIException) {
+                throw (CLIException) cause;
+            } else {
+                throw new PipeException(cause.getMessage());
+            }
         } finally {
-            // Ensure all streams are properly closed in the end.
+            // Close all pipes
             try {
-                if (prevOutput != null) {
-                    prevOutput.close();
-                }
-                if (prevInput != null) {
-                    prevInput.close();
+                for (PipedInputStream in : inputStreams) {
+                    if (in != null) in.close();
                 }
             } catch (IOException e) {
                 throw new PipeException(e.getMessage());
