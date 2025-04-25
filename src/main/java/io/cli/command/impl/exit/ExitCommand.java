@@ -24,7 +24,13 @@ public final class ExitCommand implements Command {
     public void execute() {
         int exitCode = 0;
         if (args.size() == 2) {
-            exitCode = Integer.parseInt(args.get(1).getInput());
+            try {
+                exitCode = Integer.parseInt(args.get(1).getInput());
+            } catch (NumberFormatException e) {
+                exitCode = 1;
+            }
+        } else if (args.size() > 2) {
+            exitCode = 1;
         }
         throw new ExitException(exitCode);
     }

@@ -15,11 +15,7 @@ public class ExitCommandFactory implements CommandFactory {
     }
 
     private static boolean checkArgs(List<Token> args) {
-        if (args.isEmpty() || args.size() > 2) {
-            return false;
-        }
-
-        return args.getFirst().getInput().equals("exit");
+        return !args.isEmpty() && args.getFirst().getInput().equals("exit");
     }
 
     @Override
