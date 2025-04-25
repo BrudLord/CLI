@@ -37,7 +37,7 @@ class ExternalCommandTest {
         errorStreamScriptFile = createScriptFile("error_stream_script", "echo \"error\" 1>&2; exit 1", "@echo error 1>&2 & exit 1");
         nonExecutableScriptFile = createScriptFile("non_executable_script", "echo \"not executable\"", "@echo not executable");
         if (!System.getProperty("os.name").toLowerCase().contains("win")) {
-            Files.setPosixFilePermissions(nonExecutableScriptFile, PosixFilePermissions.fromString("rw-r--r--")); // Убираем право на выполнение
+            Files.setPosixFilePermissions(nonExecutableScriptFile, PosixFilePermissions.fromString("rw-r--r--"));
         }
     }
 

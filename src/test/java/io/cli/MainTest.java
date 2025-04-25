@@ -18,8 +18,8 @@ class MainTest {
     private PipedOutputStream fakeIn;
 
     public static boolean equalsIgnoringWhitespace(String str1, String str2) {
-        String s1 = str1.replaceAll("\\s+", "");
-        String s2 = str2.replaceAll("\\s+", "");
+        String s1 = str1.replaceAll("\\s+", " ").trim();
+        String s2 = str2.replaceAll("\\s+", " ").trim();
         return s1.equals(s2);
     }
 

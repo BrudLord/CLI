@@ -82,7 +82,7 @@ public final class Main {
      * @param context The shared context for the application.
      * @return A fully configured MainOrchestrator instance.
      */
-    private static MainOrchestrator getMainOrchestrator(Context context) {
+    public static MainOrchestrator getMainOrchestrator(Context context) {
         // Initialize parsers for handling pipes, quotes, and substitutions.
         PipeParser pipeParser = new PipeParser();
         QuoteParser quoteParser = new QuoteParser();
