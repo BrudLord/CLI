@@ -48,7 +48,7 @@ public class GrepCommandTest {
     }
 
     @Test
-    void testGrepFromStandardInput_simpleMatch() throws Exception {
+    void testGrepFromStandardInputSimpleMatch() throws Exception {
         String input = "foo bar\nbaz foo baz\n";
         ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
 
@@ -69,7 +69,7 @@ public class GrepCommandTest {
     }
 
     @Test
-    void testGrep_ignoreCaseFlag() throws Exception {
+    void testGrepIgnoreCaseFlag() throws Exception {
         String input = "Hello\nhello\nHeLLo\n";
         ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
 
@@ -90,7 +90,7 @@ public class GrepCommandTest {
     }
 
     @Test
-    void testGrep_wholeWordFlag() throws Exception {
+    void testGrepWholeWordFlag() throws Exception {
         String input = "theretherex\nx there y\n";
         ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
 
@@ -111,7 +111,7 @@ public class GrepCommandTest {
     }
 
     @Test
-    void testGrep_linesAfterMatchFlag() throws Exception {
+    void testGrepLinesAfterMatchFlag() throws Exception {
         String input = String.join("\n", "one", "two match", "three", "four", "five");
         ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
 
@@ -134,7 +134,7 @@ public class GrepCommandTest {
     }
 
     @Test
-    void testGrep_singleFile() throws Exception {
+    void testGrepSingleFile() throws Exception {
         Path file = createTempFile("test.txt", "apple\nbanana\napple pie\n");
 
         // grep apple test.txt
@@ -154,7 +154,7 @@ public class GrepCommandTest {
     }
 
     @Test
-    void testGrep_multipleFiles() throws Exception {
+    void testGrepMultipleFiles() throws Exception {
         Path f1 = createTempFile("a.txt", "x\ny match\n");
         Path f2 = createTempFile("b.txt", "match z\nq\n");
 
@@ -176,7 +176,7 @@ public class GrepCommandTest {
     }
 
     @Test
-    void testGrep_invalidRegex() {
+    void testGrepInvalidRegex() {
         // grep "(*" should throw InvalidOptionException
         GrepCommand cmd = new GrepCommand(
                 Arrays.asList(
@@ -192,7 +192,7 @@ public class GrepCommandTest {
     }
 
     @Test
-    void testGrep_nonexistentFile() {
+    void testGrepNonexistentFile() {
         String missing = tempDir.resolve("no.txt").toString();
         GrepCommand cmd = new GrepCommand(
                 Arrays.asList(
@@ -208,7 +208,7 @@ public class GrepCommandTest {
     }
 
     @Test
-    void testGrep_emptyInput_noMatch() throws Exception {
+    void testGrepEmptyInput_noMatch() throws Exception {
         ByteArrayInputStream in = new ByteArrayInputStream(new byte[0]);
 
         GrepCommand cmd = new GrepCommand(
