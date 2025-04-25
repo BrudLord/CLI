@@ -71,16 +71,34 @@ public class InputParserTest {
                         new Token(COMMAND, "echo"),
                         new Token(COMMAND, "text")
                 ),
-
                 List.of(
                         new Token(COMMAND, "echo"),
                         new Token(COMMAND, "404")
                 ),
-
                 List.of(
                         new Token(COMMAND, "echo"),
                         new Token(COMMAND, "echo"),
                         new Token(COMMAND, "404")
+                )
+        );
+        assertEquals(expect, parserOrchestrator.parse(input));
+    }
+
+    @Test
+    public void testPipeInQuotes() {
+        String input = "echo 404 | echo \"pipe | pipe\" | cat 'pipe | pipe'";
+        List<List<Token>> expect = List.of(
+                List.of(
+                        new Token(COMMAND, "echo"),
+                        new Token(COMMAND, "404")
+                ),
+                List.of(
+                        new Token(COMMAND, "echo"),
+                        new Token(DOUBLE_QUOTES, "pipe | pipe")
+                ),
+                List.of(
+                        new Token(COMMAND, "cat"),
+                        new Token(SINGLE_QUOTES, "pipe | pipe")
                 )
         );
         assertEquals(expect, parserOrchestrator.parse(input));
