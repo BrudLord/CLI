@@ -21,8 +21,11 @@
 ### Сборка и запуск
 См. файл [`BUILD.md`](docs/BUILD.md) для получения дополнительной информации.
 
+### План тестирования
+См. файл [`TESTING_PLAN.md`](docs/TESTING_PLAN.md) для получения дополнительной информации.
+
 ### Contributing
-См. файл [`CONTRIBUTING.md`](CONTRIBUTING.md) для получения дополнительной информации.
+См. файл [`CONTRIBUTING.md`](docs/CONTRIBUTING.md) для получения дополнительной информации.
 
 ### License
 
