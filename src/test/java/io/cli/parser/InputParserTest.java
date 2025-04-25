@@ -103,4 +103,27 @@ public class InputParserTest {
         );
         assertEquals(expect, parserOrchestrator.parse(input));
     }
+
+    @Test
+    public void testSubstituteInPipeAndQuotes() {
+        context.setVar("x", "echo");
+        context.setVar("y", "404");
+        context.setVar("z", "|");
+        String input = "$x $y $z $x \"pipe $z pipe\" $z cat 'pipe |$z| pipe'";
+        List<List<Token>> expect = List.of(
+                List.of(
+                        new Token(COMMAND, "echo"),
+                        new Token(COMMAND, "404")
+                ),
+                List.of(
+                        new Token(COMMAND, "echo"),
+                        new Token(DOUBLE_QUOTES, "pipe | pipe")
+                ),
+                List.of(
+                        new Token(COMMAND, "cat"),
+                        new Token(SINGLE_QUOTES, "pipe |$z| pipe")
+                )
+        );
+        assertEquals(expect, parserOrchestrator.parse(input));
+    }
 }
