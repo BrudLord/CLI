@@ -1,5 +1,6 @@
 package io.cli.parser.innerparser;
 
+import io.cli.exception.InputException;
 import io.cli.parser.token.Token;
 import io.cli.parser.token.TokenType;
 
@@ -68,14 +69,16 @@ public class QuoteParser {
             prev = c; // Update the previous character.
         }
 
+        if (state != TokenType.COMMAND) {
+            // If the state is not COMMAND, it means there is an unclosed quote.
+            throw new InputException("Invalid: you must end quotes");
+        }
+
         // Handle the final token, if any.
         if (!token.isEmpty()) {
-            if (state != TokenType.COMMAND) {
-                // If the state is not COMMAND, it means there is an unclosed quote.
-                throw new IllegalStateException("Invalid: you must end quotes");
-            }
             tokens.add(new Token(state, token.toString()));
         }
+
 
         return tokens;
     }

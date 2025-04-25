@@ -1,6 +1,7 @@
 package io.cli.parser;
 
 import io.cli.context.Context;
+import io.cli.exception.InputException;
 import io.cli.parser.innerparser.*;
 import io.cli.parser.token.Token;
 import io.cli.parser.token.TokenType;
@@ -12,6 +13,7 @@ import java.util.Optional;
 
 import static io.cli.parser.token.TokenType.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class InputParserTest {
     private ParserOrchestrator parserOrchestrator;
@@ -125,5 +127,21 @@ public class InputParserTest {
                 )
         );
         assertEquals(expect, parserOrchestrator.parse(input));
+    }
+
+    @Test
+    public void testUnclosedQuotes() {
+        assertThrows(InputException.class, () -> parserOrchestrator.parse("echo ' echo"));
+        assertThrows(InputException.class, () -> parserOrchestrator.parse("echo '"));
+        assertThrows(InputException.class, () -> parserOrchestrator.parse("' echo"));
+        assertThrows(InputException.class, () -> parserOrchestrator.parse("echo \" echo"));
+        assertThrows(InputException.class, () -> parserOrchestrator.parse("echo \""));
+        assertThrows(InputException.class, () -> parserOrchestrator.parse("\" echo"));
+    }
+
+    @Test
+    public void testPipeWithoutCommand() {
+        assertThrows(InputException.class, () -> parserOrchestrator.parse("echo |"));
+        assertThrows(InputException.class, () -> parserOrchestrator.parse("| echo"));
     }
 }
