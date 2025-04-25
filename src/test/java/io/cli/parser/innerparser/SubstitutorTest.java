@@ -18,4 +18,11 @@ public class SubstitutorTest {
         var res = (new Substitutor()).substitute(List.of(new Token(TokenType.COMMAND, "x=$x;y=$y")), context);
         assertEquals(List.of(new Token(TokenType.COMMAND, "x=12;y=404")), res);
     }
+    
+    @Test
+    public void testMissingVar() {
+        Context context = new Context();
+        var res = (new Substitutor()).substitute(List.of(new Token(TokenType.COMMAND, "x=$x;y=$y")), context);
+        assertEquals(List.of(new Token(TokenType.COMMAND, "x=$x;y=$y")), res);
+    }
 }
