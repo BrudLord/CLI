@@ -1,5 +1,8 @@
 package io.cli.command.impl.grep;
 
+import io.cli.command.Command;
+import io.cli.command.impl.exit.ExitCommand;
+import io.cli.exception.ExitException;
 import io.cli.exception.InputException;
 import io.cli.exception.InvalidOptionException;
 import io.cli.exception.NonZeroExitCodeException;
@@ -15,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -223,5 +227,19 @@ public class GrepCommandTest {
         // should not throw and produce no output
         assertDoesNotThrow(cmd::execute);
         assertEquals(0, outputStream.size());
+    }
+
+    @Test
+    void testNoArgs() {
+        assertThrows(InputException.class, () -> new GrepCommand(Stream.of("grep")
+                .map(v -> new Token(TokenType.COMMAND, v))
+                .toList()));
+    }
+
+    @Test
+    void testUnknownFlag() {
+        assertThrows(InputException.class, () -> new GrepCommand(Stream.of("grep 13 -l")
+                .map(v -> new Token(TokenType.COMMAND, v))
+                .toList()));
     }
 }

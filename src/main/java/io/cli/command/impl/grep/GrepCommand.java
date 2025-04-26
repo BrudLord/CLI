@@ -58,12 +58,17 @@ public class GrepCommand implements Command, Callable<Integer> {
      */
     public GrepCommand(List<Token> args) {
         this.args = args;
-        new CommandLine(this).parseArgs(args
-                .stream()
-                .skip(1)
-                .map(Token::getInput)
-                .toArray(String[]::new)
-        );
+        try {
+            new CommandLine(this).parseArgs(args
+                    .stream()
+                    .skip(1)
+                    .map(Token::getInput)
+                    .toArray(String[]::new)
+            );
+        } catch (CommandLine.MissingParameterException | CommandLine.UnmatchedArgumentException e) {
+            throw new InputException(e.getMessage());
+        }
+
     }
 
     /**
