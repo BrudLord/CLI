@@ -3,10 +3,28 @@ package io.cli.command;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * Represents a command that can be executed within a custom command-line interface (CLI).
+ */
 public interface Command {
-    int execute();
+    /**
+     * Executes the command.
+     */
+    void execute();
 
+    /**
+     * Sets the input stream for the command. This allows the command to receive
+     * input, for example, from the user or from the output of another command (piping).
+     *
+     * @param newInputStream The {@code InputStream} to be used by the command.
+     */
     void setInputStream(InputStream newInputStream);
 
+    /**
+     * Sets the output stream for the command. This allows the command to write
+     * its output, for example, to the console or to a file.
+     *
+     * @param newOutputStream The {@code OutputStream} to be used by the command.
+     */
     void setOutputStream(OutputStream newOutputStream);
 }

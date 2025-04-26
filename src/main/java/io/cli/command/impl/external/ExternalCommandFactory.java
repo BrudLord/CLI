@@ -11,6 +11,11 @@ import java.util.Optional;
 public class ExternalCommandFactory implements CommandFactory {
     private final Context context;
 
+    /**
+     * Constructs an {@code ExternalCommandFactory} with the given {@code Context}.
+     *
+     * @param context The {@code Context} that will be passed to created {@code ExternalCommand} instances.
+     */
     public ExternalCommandFactory(Context context) {
         this.context = context;
     }

@@ -7,7 +7,13 @@ import io.cli.parser.token.Token;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Factory class for creating instances of {@link EchoCommand}.
+ */
 public class EchoCommandFactory implements CommandFactory {
+    /**
+     * Default constructor for EchoCommandFactory.
+     */
     public EchoCommandFactory() {
     }
 
@@ -19,6 +25,12 @@ public class EchoCommandFactory implements CommandFactory {
         return args.getFirst().getInput().strip().equals("echo");
     }
 
+    /**
+     * Creates a new instance of {@link EchoCommand} if the arguments are valid.
+     *
+     * @param args The list of tokens representing command-line arguments.
+     * @return An Optional containing a new `CatCommand` instance if valid, otherwise an empty Optional.
+     */
     @Override
     public Optional<Command> newCommand(List<Token> args) {
         if (!checkArgs(args)) {

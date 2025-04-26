@@ -1,40 +1,52 @@
 package io.cli.command.impl.pwd;
 
 import io.cli.command.Command;
-import io.cli.exception.ExitException;
-import io.cli.parser.token.Token;
+import io.cli.exception.OutputException;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.List;
+import java.io.*;
+import java.nio.file.Paths;
 
 public class PwdCommand implements Command {
-    private final List<Token> args;
-
-    private InputStream inputStream = System.in;
     private OutputStream outputStream = System.out;
 
-    public PwdCommand(List<Token> args) {
-        this.args = args;
+    /**
+     * Default constructor for PwdCommand.
+     */
+    public PwdCommand() {
     }
 
+    /**
+     * Executes the {@code pwd} command: prints the current working directory.
+     */
     @Override
-    public int execute() {
-        PrintWriter printWriter = new PrintWriter(outputStream);
-        String currentDirectory = System.getProperty("user.dir");
-        printWriter.println(currentDirectory);
-        printWriter.flush();
-        return 0;
+    public void execute() {
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+        try {
+            writer.write(Paths.get("").toAbsolutePath().toString());
+            writer.newLine();
+            writer.flush();
+        } catch (IOException e) {
+            throw new OutputException(e.getMessage());
+        }
     }
 
+    /**
+     * Sets the input stream for this command.
+     * PwdCommand typically doesn't handle input, so this method does nothing.
+     *
+     * @param newInputStream Ignored by this method.
+     */
     @Override
     public void setInputStream(InputStream newInputStream) {
-        inputStream = newInputStream;
     }
 
+    /**
+     * Sets a new output stream for the command.
+     *
+     * @param newOutputStream The new output stream to use.
+     */
     @Override
     public void setOutputStream(OutputStream newOutputStream) {
-        outputStream = newOutputStream;
+        this.outputStream = newOutputStream;
     }
 }

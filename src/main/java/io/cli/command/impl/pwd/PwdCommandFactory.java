@@ -7,25 +7,31 @@ import io.cli.parser.token.Token;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Factory class for creating instances of {@link PwdCommand}.
+ */
 public class PwdCommandFactory implements CommandFactory {
+    /**
+     * Default constructor for PwdCommandFactory.
+     */
     public PwdCommandFactory() {
     }
 
     private static boolean checkArgs(List<Token> args) {
-        if (args.isEmpty()) {
-            return false;
-        }
-
-        return args.getFirst().getInput().equals("pwd");
+        return !args.isEmpty() && "pwd".equals(args.getFirst().getInput());
     }
 
+    /**
+     * Creates a new instance of {@link PwdCommand} if the arguments are valid.
+     *
+     * @param args The list of tokens representing command-line arguments.
+     * @return An Optional containing a new `PwdCommand` instance if valid, otherwise an empty Optional.
+     */
     @Override
     public Optional<Command> newCommand(List<Token> args) {
         if (!checkArgs(args)) {
             return Optional.empty();
         }
-
-        Command command = new PwdCommand(args);
-        return Optional.of(command);
+        return Optional.of(new PwdCommand());
     }
 }

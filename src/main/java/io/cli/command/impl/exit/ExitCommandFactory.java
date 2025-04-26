@@ -8,15 +8,14 @@ import java.util.List;
 import java.util.Optional;
 
 public class ExitCommandFactory implements CommandFactory {
+    /**
+     * Default constructor for ExitCommandFactory.
+     */
     public ExitCommandFactory() {
     }
 
     private static boolean checkArgs(List<Token> args) {
-        if (args.isEmpty() || args.size() > 2) {
-            return false;
-        }
-
-        return args.getFirst().getInput().equals("exit");
+        return !args.isEmpty() && args.getFirst().getInput().equals("exit");
     }
 
     @Override

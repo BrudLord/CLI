@@ -29,5 +29,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Checkstyle
+        run: mvn checkstyle:check
+
       - name: Build and run tests
         run: mvn clean test
