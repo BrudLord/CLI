@@ -120,18 +120,24 @@ public class LsCommand implements Command {
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
         try {
             if (filepaths.size() == 1) {
-                boolean isWorkingDirectoryTraversed = Objects.equals(filepaths.getFirst().filepath, ".");
+                if (filepaths.getFirst().type == EntryType.DIRECTORY) {
+                    // directory
+                    boolean isWorkingDirectory = Objects.equals(filepaths.getFirst().filepath, ".");
+                    // print the entries of the current working directory
+                    List<String> dirFilepaths = filepaths.getFirst().dirFilepaths;
+                    for (int i = 0, dirFilepathsSize = dirFilepaths.size(); i < dirFilepathsSize; i++) {
+                        var filepath = dirFilepaths.get(i);
+                        writer.write(filepath);
 
-                // print the entries of the current working directory
-                List<String> dirFilepaths = filepaths.getFirst().dirFilepaths;
-                for (int i = 0, dirFilepathsSize = dirFilepaths.size(); i < dirFilepathsSize; i++) {
-                    var filepath = dirFilepaths.get(i);
-                    writer.write(filepath);
-
-                    if (i + 1 < dirFilepathsSize) {
-                        if (isWorkingDirectoryTraversed) writer.write("    ");
-                        else writer.newLine();
+                        if (i + 1 < dirFilepathsSize) {
+                            if (isWorkingDirectory) writer.write("    ");
+                            else writer.newLine();
+                        }
                     }
+                }
+                else {
+                    // file
+                    writer.write(filepaths.getFirst().filepath);
                 }
                 writer.newLine();
                 writer.flush();
