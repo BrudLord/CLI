@@ -66,7 +66,7 @@ class ExternalCommandTest {
         externalCommand.setOutputStream(outputStream);
         externalCommand.execute();
         assertEquals("hello world" + System.lineSeparator(), outputStream.toString(StandardCharsets.UTF_8));
-        assertEquals("0", context.getVar(Variables.MOST_RECENT_RETURN_STATUS_CODE_VARIABLE_NAME));
+        assertEquals("0", context.getStatusCode());
     }
 
     @Test

@@ -26,7 +26,7 @@ public class PwdCommand implements Command {
     public void execute() {
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
         try {
-            String pwd = context.getVar(Variables.CURRENT_WORKING_DIRECTORY_VARIABLE_NAME);
+            String pwd = context.pwd();
             // pwd variable is not registered in the context but expected to
             if (pwd == null) {
                 throw new CommandIllegalStateException(
@@ -35,7 +35,6 @@ public class PwdCommand implements Command {
                         +" is not present in the environment context, but expected to be present. "
                         +"See which `Context` instance is provided and how it is created.");
             }
-
             writer.write(pwd);
             writer.newLine();
             writer.flush();

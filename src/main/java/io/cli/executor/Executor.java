@@ -74,7 +74,8 @@ public class Executor {
                         command.execute();
                         return null;
                     } catch (CLIException e) {
-                        context.setVar(Variables.MOST_RECENT_RETURN_STATUS_CODE_VARIABLE_NAME, Integer.toString(e.getExitCode()));
+                        String statusCode = Integer.toString(e.getExitCode());
+                        context.setStatusCode(statusCode);
                         throw e;
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -96,7 +97,7 @@ public class Executor {
                 future.get();  // Also throws exceptions from commands
             }
 
-            context.setVar(Variables.MOST_RECENT_RETURN_STATUS_CODE_VARIABLE_NAME, "0");
+            context.setSuccessfulStatusCode();
 
         } catch (IOException | InterruptedException e) {
             throw new PipeException(e.getMessage());
