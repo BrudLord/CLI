@@ -1,5 +1,6 @@
 package io.cli.context;
 
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,11 +12,27 @@ public class Context {
     private final Map<String, String> envVars = new HashMap<>();
 
     /**
-     * Initializes the context with default values.
+     * Creates a default instance of {@code Context} with several environment variables,
+     * such as `?` symbol and a current working directory (used by `pwd` CLI command).
+     *
+     * @return {@code Context}
      */
-    public Context() {
-        setVar("?", "0");
+    public static Context initial() {
+        var context = new Context();
+
+        // install default expected values
+        String pwd = Paths.get("").toAbsolutePath().toString();
+        context.setVar(Variables.CURRENT_WORKING_DIRECTORY_VARIABLE_NAME, pwd);
+        context.setVar(Variables.MOST_RECENT_RETURN_STATUS_CODE_VARIABLE_NAME, "0");
+
+        return context;
     }
+
+    /**
+     * Initializes the context with default values.
+     * See {@code Context.initial} static method.
+     */
+    private Context() {}
 
     /**
      * Retrieves an unmodifiable view of the environment variables.

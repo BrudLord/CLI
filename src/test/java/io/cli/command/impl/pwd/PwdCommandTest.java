@@ -1,6 +1,7 @@
 package io.cli.command.impl.pwd;
 
 import io.cli.command.Command;
+import io.cli.context.Context;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,15 +22,17 @@ public class PwdCommandTest {
 
     @Test
     void testPwdCommand() {
-        Command pwdCommand = new PwdCommand();
+        var context = Context.initial();
+        Command pwdCommand = new PwdCommand(context);
+        String currentAbsoluteFilepath = Paths.get("").toAbsolutePath().toString();
 
         pwdCommand.setOutputStream(outputStream);
 
         assertDoesNotThrow(pwdCommand::execute, "Exit code should be 0 on success");
         assertEquals(
-                Paths.get("").toAbsolutePath().toString(),
-                outputStream.toString().trim(),
-                "Output should match current working directory"
+            currentAbsoluteFilepath,
+            outputStream.toString().trim(),
+            "Output should match current working directory"
         );
     }
 }

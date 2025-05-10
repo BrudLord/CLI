@@ -2,6 +2,7 @@ package io.cli.executor;
 
 import io.cli.command.Command;
 import io.cli.context.Context;
+import io.cli.context.Variables;
 import io.cli.exception.CLIException;
 import io.cli.exception.PipeException;
 
@@ -73,7 +74,7 @@ public class Executor {
                         command.execute();
                         return null;
                     } catch (CLIException e) {
-                        context.setVar("?", Integer.toString(e.getExitCode()));
+                        context.setVar(Variables.MOST_RECENT_RETURN_STATUS_CODE_VARIABLE_NAME, Integer.toString(e.getExitCode()));
                         throw e;
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -95,7 +96,7 @@ public class Executor {
                 future.get();  // Also throws exceptions from commands
             }
 
-            context.setVar("?", "0");
+            context.setVar(Variables.MOST_RECENT_RETURN_STATUS_CODE_VARIABLE_NAME, "0");
 
         } catch (IOException | InterruptedException e) {
             throw new PipeException(e.getMessage());

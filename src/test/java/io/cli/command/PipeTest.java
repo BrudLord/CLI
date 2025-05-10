@@ -25,7 +25,7 @@ public class PipeTest {
 
     @BeforeEach
     void setUp() {
-        Context context = new Context();
+        Context context = Context.initial();
         mainOrchestrator = Main.getMainOrchestrator(context);
         fakeOut = new ByteArrayOutputStream();
         PrintStream fakeStream = new PrintStream(fakeOut);

@@ -21,7 +21,7 @@ public class InputParserTest {
 
     @BeforeEach
     public void prepareInputParser() {
-        context = new Context();
+        context = Context.initial();
         // Initialize parsers for handling pipes, quotes, and substitutions.
         PipeParser pipeParser = new PipeParser();
         QuoteParser quoteParser = new QuoteParser();

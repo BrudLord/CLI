@@ -36,7 +36,7 @@ public final class Main {
      * @param args Command-line arguments (not used in this implementation).
      */
     public static void main(String[] args) {
-        Context context = new Context(); // Shared context for variables and state.
+        Context context = Context.initial(); // Shared context for variables and state.
         MainOrchestrator mainOrchestrator = getMainOrchestrator(context); // Setup main orchestrator.
 
         // Use try-with-resources to ensure Scanner is closed properly.
@@ -98,7 +98,7 @@ public final class Main {
                 new EchoCommandFactory(),
                 new ExitCommandFactory(),
                 new GrepCommandFactory(),
-                new PwdCommandFactory(),
+                new PwdCommandFactory(context),
                 new WcCommandFactory(),
                 new ExternalCommandFactory(context) // ExternalCommandFactory must be last.
         );
