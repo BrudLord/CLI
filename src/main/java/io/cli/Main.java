@@ -3,6 +3,7 @@ package io.cli;
 import io.cli.command.CommandFactory;
 import io.cli.command.impl.assign.AssignCommandFactory;
 import io.cli.command.impl.cat.CatCommandFactory;
+import io.cli.command.impl.cd.CdCommandFactory;
 import io.cli.command.impl.echo.EchoCommandFactory;
 import io.cli.command.impl.exit.ExitCommandFactory;
 import io.cli.command.impl.external.ExternalCommandFactory;
@@ -99,6 +100,7 @@ public final class Main {
                 new ExitCommandFactory(),
                 new GrepCommandFactory(),
                 new PwdCommandFactory(context),
+                new CdCommandFactory(context),
                 new WcCommandFactory(),
                 new ExternalCommandFactory(context) // ExternalCommandFactory must be last.
         );
