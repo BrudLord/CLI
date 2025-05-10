@@ -64,14 +64,6 @@ public class WcCommand implements Command {
         long[] totalCounts = new long[TOTAL_COUNTS_LEN];
 
         for (int i = 1; i < args.size(); i++) {
-
-            // TODO: everywhere where it reads from a file, abstract it away into Context
-            //       because filepaths depend on the PWD; it's not reflected here.
-            //       have a common API for this.
-            //       see: https://stackoverflow.com/questions/840190/changing-the-current-working-directory-in-java
-            //            https://docs.oracle.com/javase/8/docs/api/java/io/File.html#File-java.lang.String-java.lang.String-
-            // TODO: create API (e.g., FsApi) that replaces direct `Files.newBufferedReader` with Context's PWD-dependent
-            //       filepaths (treat both absolut and relative paths)
             String filepath = args.get(i).getInput();
             Path adjustedFilepath = fs.withWorkingDir(context, filepath);
 

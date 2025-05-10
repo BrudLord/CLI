@@ -18,6 +18,11 @@ public interface FsApi<Path> {
      * @return adjusted path (e.g., {@code context.pwd / path}
      */
     Path withWorkingDir(Context context, Path path);
-
     Path withWorkingDir(Context context, String path);
+
+    Path relativeToWorkingDir(Context context, Path path);
+    Path relativeToWorkingDir(Context context, String path);
+
+    Path relativeTo(Path base, Path target);
+    Path relativeTo(Path base, String target);
 }

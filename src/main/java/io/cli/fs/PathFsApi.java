@@ -22,4 +22,26 @@ public class PathFsApi implements FsApi<Path> {
     public Path withWorkingDir(Context context, String path) {
         return withWorkingDir(context, Paths.get(path));
     }
+
+    @Override
+    public Path relativeToWorkingDir(Context context, Path path) {
+        Path pwd = Paths.get(context.pwd());
+        return relativeTo(pwd, path);
+        // return pwd.relativize(path);
+    }
+
+    @Override
+    public Path relativeToWorkingDir(Context context, String path) {
+        return relativeToWorkingDir(context, Paths.get(path));
+    }
+
+    @Override
+    public Path relativeTo(Path base, Path target) {
+        return base.relativize(target);
+    }
+
+    @Override
+    public Path relativeTo(Path base, String target) {
+        return relativeTo(base, Paths.get(target));
+    }
 }
