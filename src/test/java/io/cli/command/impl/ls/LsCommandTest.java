@@ -29,7 +29,6 @@ class LsCommandTest {
     private ByteArrayOutputStream outputStream;
     private PrintStream originalErr;
     private PathFsApi fs;
-    private Context context;
 
     @BeforeEach
     void setUp() {
@@ -37,7 +36,6 @@ class LsCommandTest {
         originalErr = System.err;
         lsToken = new Token(TokenType.COMMAND, "ls");
         fs = new PathFsApi();
-        context = Context.initial();
     }
 
     @AfterEach
