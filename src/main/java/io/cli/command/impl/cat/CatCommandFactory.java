@@ -2,6 +2,8 @@ package io.cli.command.impl.cat;
 
 import io.cli.command.Command;
 import io.cli.command.CommandFactory;
+import io.cli.context.Context;
+import io.cli.fs.PathFsApi;
 import io.cli.parser.token.Token;
 
 import java.util.List;
@@ -12,10 +14,15 @@ import java.util.Optional;
  * Factory class for creating instances of {@link CatCommand}.
  */
 public class CatCommandFactory implements CommandFactory {
+    private final PathFsApi fs;
+    private final Context context;
+
     /**
      * Default constructor for WcCommandFactory.
      */
-    public CatCommandFactory() {
+    public CatCommandFactory(PathFsApi fs, Context context) {
+        this.fs = fs;
+        this.context = context;
     }
 
     private static boolean checkArgs(List<Token> args) {
@@ -37,7 +44,7 @@ public class CatCommandFactory implements CommandFactory {
             return Optional.empty();
         }
 
-        Command command = new CatCommand(args);
+        Command command = new CatCommand(args, fs, context);
         return Optional.of(command);
     }
 }

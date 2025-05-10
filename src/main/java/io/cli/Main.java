@@ -14,6 +14,7 @@ import io.cli.context.Context;
 import io.cli.exception.CLIException;
 import io.cli.exception.ExitException;
 import io.cli.executor.Executor;
+import io.cli.fs.PathFsApi;
 import io.cli.parser.ParserOrchestrator;
 import io.cli.parser.innerparser.PipeParser;
 import io.cli.parser.innerparser.QuoteParser;
@@ -89,19 +90,21 @@ public final class Main {
         QuoteParser quoteParser = new QuoteParser();
         Substitutor substitutor = new Substitutor();
 
+        PathFsApi fs = new PathFsApi();
+
         // Set up the parser orchestrator with the parsers and shared context.
         ParserOrchestrator parserOrchestrator = new ParserOrchestrator(pipeParser, quoteParser, substitutor, context);
 
         // Define the available command factories.
         List<CommandFactory> commandFactories = List.of(
                 new AssignCommandFactory(context),
-                new CatCommandFactory(),
+                new CatCommandFactory(fs, context),
                 new EchoCommandFactory(),
                 new ExitCommandFactory(),
-                new GrepCommandFactory(),
+                new GrepCommandFactory(fs, context),
                 new PwdCommandFactory(context),
                 new CdCommandFactory(context),
-                new WcCommandFactory(),
+                new WcCommandFactory(fs, context),
                 new ExternalCommandFactory(context) // ExternalCommandFactory must be last.
         );
 

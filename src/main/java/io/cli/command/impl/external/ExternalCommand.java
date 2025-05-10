@@ -92,7 +92,6 @@ public class ExternalCommand implements Command {
     @Override
     public void execute() {
         try {
-            assert(false);
             Process process = createAndStartProcess();
 
             int exitCode = process.waitFor();

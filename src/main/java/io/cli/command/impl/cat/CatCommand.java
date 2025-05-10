@@ -1,9 +1,11 @@
 package io.cli.command.impl.cat;
 
 import io.cli.command.Command;
+import io.cli.context.Context;
 import io.cli.exception.InputException;
 import io.cli.exception.InvalidOptionException;
 import io.cli.exception.OutputException;
+import io.cli.fs.PathFsApi;
 import io.cli.parser.token.Token;
 
 import java.io.*;
@@ -18,6 +20,8 @@ import java.util.List;
  */
 public class CatCommand implements Command {
     private final List<Token> args;
+    private final PathFsApi fs;
+    private final Context context;
     private InputStream inputStream = System.in;
     private OutputStream outputStream = System.out;
 
@@ -27,8 +31,10 @@ public class CatCommand implements Command {
      *
      * @param args The list of tokens representing command-line arguments.
      */
-    public CatCommand(List<Token> args) {
+    public CatCommand(List<Token> args, PathFsApi fs, Context context) {
         this.args = args;
+        this.fs = fs;
+        this.context = context;
     }
 
 
@@ -48,21 +54,19 @@ public class CatCommand implements Command {
         }
 
         if (args.size() == 1) {
-
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
             cat(reader, writer);
-
             return;
         }
 
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
 
         for (int i = 1; i < args.size(); i++) {
+            String filepath = args.get(i).getInput();
+            Path adjustedFilepath = fs.withWorkingDir(context, filepath);
 
-            String filename = args.get(i).getInput();
-
-            try (BufferedReader fileReader = Files.newBufferedReader(Path.of(filename))) {
+            try (BufferedReader fileReader = Files.newBufferedReader(adjustedFilepath)) {
                 cat(fileReader, writer);
             } catch (IOException e) {
                 throw new InputException(e.getMessage());
