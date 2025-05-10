@@ -1,6 +1,8 @@
 package io.cli.command.impl.cat;
 
+import io.cli.context.Context;
 import io.cli.exception.InputException;
+import io.cli.fs.PathFsApi;
 import io.cli.parser.token.Token;
 import io.cli.parser.token.TokenType;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,11 +31,15 @@ public class CatCommandTest {
 
     private Token catToken;
     private ByteArrayOutputStream outputStream;
+    private PathFsApi fs;
+    private Context context;
 
     @BeforeEach
     void setUp() {
         outputStream = new ByteArrayOutputStream();
         catToken = new Token(TokenType.COMMAND, "cat");
+        fs = new PathFsApi();
+        context = Context.initial();
     }
 
     private Path createTempFile(String fileName, String content) throws IOException {
@@ -51,7 +57,11 @@ public class CatCommandTest {
         String inputContent = "Dance, dance, dance\nto the radio\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(inputContent.getBytes());
 
-        CatCommand catCommand = new CatCommand(Collections.singletonList(catToken));
+        CatCommand catCommand = new CatCommand(
+            Collections.singletonList(catToken),
+            fs,
+            context
+        );
         catCommand.setInputStream(inputStream);
         catCommand.setOutputStream(outputStream);
 
@@ -68,7 +78,11 @@ public class CatCommandTest {
         String fileContent = "Я снова маленький, солнце яркое\nМама опять сильнее всех в мире\n";
         Path testFile = createTempFile("testFile.txt", fileContent);
 
-        CatCommand catCommand = new CatCommand(Arrays.asList(catToken, new Token(TokenType.COMMAND, testFile.toString())));
+        CatCommand catCommand = new CatCommand(
+            Arrays.asList(catToken, new Token(TokenType.COMMAND, testFile.toString())),
+            fs,
+            context
+        );
         catCommand.setOutputStream(outputStream);
 
         assertDoesNotThrow(catCommand::execute);
@@ -84,9 +98,14 @@ public class CatCommandTest {
         Path file1 = createTempFile("file1.txt", "Hello\nWorld\n");
         Path file2 = createTempFile("file2.txt", "Goodbye\nMoon\n");
 
-        CatCommand catCommand = new CatCommand(Arrays.asList(catToken,
-                new Token(TokenType.COMMAND, file1.toString()),
-                new Token(TokenType.COMMAND, file2.toString())));
+        CatCommand catCommand = new CatCommand(
+                Arrays.asList(catToken,
+                    new Token(TokenType.COMMAND, file1.toString()),
+                    new Token(TokenType.COMMAND, file2.toString())
+                ),
+                fs,
+                context
+        );
         catCommand.setOutputStream(outputStream);
 
         assertDoesNotThrow(catCommand::execute);
@@ -100,7 +119,11 @@ public class CatCommandTest {
     @Test
     void testCatNonExistentFile() {
         Path testFile = tempDir.resolve("missing.txt");
-        CatCommand catCommand = new CatCommand(Arrays.asList(catToken, new Token(TokenType.COMMAND, testFile.toString())));
+        CatCommand catCommand = new CatCommand(
+                Arrays.asList(catToken, new Token(TokenType.COMMAND, testFile.toString())),
+                fs,
+                context
+        );
         catCommand.setOutputStream(outputStream);
 
         assertThrows(InputException.class, catCommand::execute, "Cat with invalid files should throw InputException");
@@ -115,9 +138,14 @@ public class CatCommandTest {
         Path file = createTempFile("test1.txt", "file content\n");
         String missingFile = tempDir.resolve("missing.txt").toString();
 
-        CatCommand catCommand = new CatCommand(Arrays.asList(catToken,
-                new Token(TokenType.COMMAND, file.toString()),
-                new Token(TokenType.COMMAND, missingFile)));
+        CatCommand catCommand = new CatCommand(
+                Arrays.asList(catToken,
+                    new Token(TokenType.COMMAND, file.toString()),
+                    new Token(TokenType.COMMAND, missingFile)
+                ),
+                fs,
+                context
+        );
         catCommand.setOutputStream(outputStream);
 
         assertThrows(InputException.class, catCommand::execute, "Cat with invalid files should throw InputException");
@@ -136,7 +164,11 @@ public class CatCommandTest {
             }
         };
 
-        CatCommand catCommand = new CatCommand(Collections.singletonList(catToken));
+        CatCommand catCommand = new CatCommand(
+                Collections.singletonList(catToken),
+                fs,
+                context
+        );
         catCommand.setInputStream(errorInputStream);
         catCommand.setOutputStream(outputStream);
 

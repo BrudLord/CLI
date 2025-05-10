@@ -2,10 +2,12 @@ package io.cli.command.impl.grep;
 
 import io.cli.command.Command;
 import io.cli.command.impl.exit.ExitCommand;
+import io.cli.context.Context;
 import io.cli.exception.ExitException;
 import io.cli.exception.InputException;
 import io.cli.exception.InvalidOptionException;
 import io.cli.exception.NonZeroExitCodeException;
+import io.cli.fs.PathFsApi;
 import io.cli.parser.token.Token;
 import io.cli.parser.token.TokenType;
 import org.junit.jupiter.api.AfterEach;
@@ -33,11 +35,15 @@ public class GrepCommandTest {
 
     private Token grepToken;
     private ByteArrayOutputStream outputStream;
+    private PathFsApi fs;
+    private Context context;
 
     @BeforeEach
     void setUp() {
         grepToken = new Token(TokenType.COMMAND, "grep");
         outputStream = new ByteArrayOutputStream();
+        fs = new PathFsApi();
+        context = Context.initial();
     }
 
     @AfterEach
@@ -61,7 +67,9 @@ public class GrepCommandTest {
                 Arrays.asList(
                         grepToken,
                         new Token(TokenType.COMMAND, "foo")
-                )
+                ),
+                fs,
+                context
         );
         cmd.setInputStream(in);
         cmd.setOutputStream(outputStream);
@@ -80,10 +88,12 @@ public class GrepCommandTest {
         // grep -i hello
         GrepCommand cmd = new GrepCommand(
                 Arrays.asList(
-                        grepToken,
-                        new Token(TokenType.COMMAND, "-i"),
-                        new Token(TokenType.COMMAND, "hello")
-                )
+                    grepToken,
+                    new Token(TokenType.COMMAND, "-i"),
+                    new Token(TokenType.COMMAND, "hello")
+                ),
+                fs,
+                context
         );
         cmd.setInputStream(in);
         cmd.setOutputStream(outputStream);
@@ -100,11 +110,13 @@ public class GrepCommandTest {
 
         // grep -w there
         GrepCommand cmd = new GrepCommand(
-                Arrays.asList(
-                        grepToken,
-                        new Token(TokenType.COMMAND, "-w"),
-                        new Token(TokenType.COMMAND, "there")
-                )
+            Arrays.asList(
+                grepToken,
+                new Token(TokenType.COMMAND, "-w"),
+                new Token(TokenType.COMMAND, "there")
+            ),
+            fs,
+            context
         );
         cmd.setInputStream(in);
         cmd.setOutputStream(outputStream);
@@ -121,12 +133,14 @@ public class GrepCommandTest {
 
         // grep -A 2 match
         GrepCommand cmd = new GrepCommand(
-                Arrays.asList(
-                        grepToken,
-                        new Token(TokenType.COMMAND, "-A"),
-                        new Token(TokenType.COMMAND, "2"),
-                        new Token(TokenType.COMMAND, "match")
-                )
+            Arrays.asList(
+                grepToken,
+                new Token(TokenType.COMMAND, "-A"),
+                new Token(TokenType.COMMAND, "2"),
+                new Token(TokenType.COMMAND, "match")
+            ),
+            fs,
+            context
         );
         cmd.setInputStream(in);
         cmd.setOutputStream(outputStream);
@@ -143,11 +157,13 @@ public class GrepCommandTest {
 
         // grep apple test.txt
         GrepCommand cmd = new GrepCommand(
-                Arrays.asList(
-                        grepToken,
-                        new Token(TokenType.COMMAND, "apple"),
-                        new Token(TokenType.COMMAND, file.toString())
-                )
+            Arrays.asList(
+                grepToken,
+                new Token(TokenType.COMMAND, "apple"),
+                new Token(TokenType.COMMAND, file.toString())
+            ),
+            fs,
+            context
         );
         cmd.setOutputStream(outputStream);
 
@@ -164,12 +180,14 @@ public class GrepCommandTest {
 
         // grep match a.txt b.txt
         GrepCommand cmd = new GrepCommand(
-                Arrays.asList(
-                        grepToken,
-                        new Token(TokenType.COMMAND, "match"),
-                        new Token(TokenType.COMMAND, f1.toString()),
-                        new Token(TokenType.COMMAND, f2.toString())
-                )
+            Arrays.asList(
+                grepToken,
+                new Token(TokenType.COMMAND, "match"),
+                new Token(TokenType.COMMAND, f1.toString()),
+                new Token(TokenType.COMMAND, f2.toString())
+            ),
+            fs,
+            context
         );
         cmd.setOutputStream(outputStream);
 
@@ -183,10 +201,12 @@ public class GrepCommandTest {
     void testGrepInvalidRegex() {
         // grep "(*" should throw InvalidOptionException
         GrepCommand cmd = new GrepCommand(
-                Arrays.asList(
-                        grepToken,
-                        new Token(TokenType.COMMAND, "(*")
-                )
+            Arrays.asList(
+                grepToken,
+                new Token(TokenType.COMMAND, "(*")
+            ),
+            fs,
+            context
         );
         cmd.setInputStream(new ByteArrayInputStream("data".getBytes()));
         cmd.setOutputStream(outputStream);
@@ -199,11 +219,13 @@ public class GrepCommandTest {
     void testGrepNonexistentFile() {
         String missing = tempDir.resolve("no.txt").toString();
         GrepCommand cmd = new GrepCommand(
-                Arrays.asList(
-                        grepToken,
-                        new Token(TokenType.COMMAND, "test"),
-                        new Token(TokenType.COMMAND, missing)
-                )
+            Arrays.asList(
+                grepToken,
+                new Token(TokenType.COMMAND, "test"),
+                new Token(TokenType.COMMAND, missing)
+            ),
+            fs,
+            context
         );
         cmd.setOutputStream(outputStream);
 
@@ -216,10 +238,12 @@ public class GrepCommandTest {
         ByteArrayInputStream in = new ByteArrayInputStream(new byte[0]);
 
         GrepCommand cmd = new GrepCommand(
-                Arrays.asList(
-                        grepToken,
-                        new Token(TokenType.COMMAND, "anything")
-                )
+            Arrays.asList(
+                grepToken,
+                new Token(TokenType.COMMAND, "anything")
+            ),
+            fs,
+            context
         );
         cmd.setInputStream(in);
         cmd.setOutputStream(outputStream);
@@ -231,15 +255,23 @@ public class GrepCommandTest {
 
     @Test
     void testNoArgs() {
-        assertThrows(InputException.class, () -> new GrepCommand(Stream.of("grep")
+        assertThrows(InputException.class, () -> new GrepCommand(
+            Stream.of("grep")
                 .map(v -> new Token(TokenType.COMMAND, v))
-                .toList()));
+                .toList(),
+            fs,
+            context
+        ));
     }
 
     @Test
     void testUnknownFlag() {
-        assertThrows(InputException.class, () -> new GrepCommand(Stream.of("grep 13 -l")
+        assertThrows(InputException.class, () -> new GrepCommand(
+            Stream.of("grep 13 -l")
                 .map(v -> new Token(TokenType.COMMAND, v))
-                .toList()));
+                .toList(),
+            fs,
+            context
+        ));
     }
 }

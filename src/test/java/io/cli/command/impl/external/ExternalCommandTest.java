@@ -1,6 +1,7 @@
 package io.cli.command.impl.external;
 
 import io.cli.context.Context;
+import io.cli.context.Variables;
 import io.cli.exception.CLIException;
 import io.cli.exception.NonZeroExitCodeException;
 import org.junit.jupiter.api.AfterEach;
@@ -28,7 +29,7 @@ class ExternalCommandTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        context = new Context();
+        context = Context.initial();
         context.setVar("text", "hello world");
         outputStream = new ByteArrayOutputStream();
 
@@ -65,7 +66,7 @@ class ExternalCommandTest {
         externalCommand.setOutputStream(outputStream);
         externalCommand.execute();
         assertEquals("hello world" + System.lineSeparator(), outputStream.toString(StandardCharsets.UTF_8));
-        assertEquals("0", context.getVar("?"));
+        assertEquals("0", context.getStatusCode());
     }
 
     @Test

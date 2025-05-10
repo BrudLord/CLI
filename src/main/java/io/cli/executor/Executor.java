@@ -2,6 +2,7 @@ package io.cli.executor;
 
 import io.cli.command.Command;
 import io.cli.context.Context;
+import io.cli.context.Variables;
 import io.cli.exception.CLIException;
 import io.cli.exception.PipeException;
 
@@ -73,7 +74,8 @@ public class Executor {
                         command.execute();
                         return null;
                     } catch (CLIException e) {
-                        context.setVar("?", Integer.toString(e.getExitCode()));
+                        String statusCode = Integer.toString(e.getExitCode());
+                        context.setStatusCode(statusCode);
                         throw e;
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -95,7 +97,7 @@ public class Executor {
                 future.get();  // Also throws exceptions from commands
             }
 
-            context.setVar("?", "0");
+            context.setSuccessfulStatusCode();
 
         } catch (IOException | InterruptedException e) {
             throw new PipeException(e.getMessage());

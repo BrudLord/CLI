@@ -1,10 +1,12 @@
 package io.cli.command.impl.wc;
 
 import io.cli.command.Command;
+import io.cli.context.Context;
 import io.cli.exception.InputException;
 import io.cli.exception.InvalidOptionException;
 import io.cli.exception.NonZeroExitCodeException;
 import io.cli.exception.OutputException;
+import io.cli.fs.PathFsApi;
 import io.cli.parser.token.Token;
 
 import java.io.*;
@@ -15,6 +17,8 @@ import java.util.List;
 public class WcCommand implements Command {
     private static final int TOTAL_COUNTS_LEN = 3;
     private final List<Token> args;
+    private final PathFsApi fs;
+    private final Context context;
     private InputStream inputStream = System.in;
     private OutputStream outputStream = System.out;
 
@@ -23,8 +27,10 @@ public class WcCommand implements Command {
      *
      * @param args The list of tokens representing command-line arguments.
      */
-    public WcCommand(List<Token> args) {
+    public WcCommand(List<Token> args, PathFsApi fs, Context context) {
         this.args = args;
+        this.fs = fs;
+        this.context = context;
     }
 
     /**
@@ -44,7 +50,6 @@ public class WcCommand implements Command {
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
 
         if (args.size() == 1) {
-
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             try {
                 long[] counts = count(reader);
@@ -52,30 +57,25 @@ public class WcCommand implements Command {
             } catch (IOException e) {
                 throw new InputException(e.getMessage());
             }
-
             return;
-
         }
 
         boolean hasFileErrors = false;
         long[] totalCounts = new long[TOTAL_COUNTS_LEN];
 
         for (int i = 1; i < args.size(); i++) {
+            String filepath = args.get(i).getInput();
+            Path adjustedFilepath = fs.withWorkingDir(context, filepath);
 
-            String filename = args.get(i).getInput();
-
-            try (BufferedReader fileReader = Files.newBufferedReader(Path.of(filename))) {
-
+            try (BufferedReader fileReader = Files.newBufferedReader(adjustedFilepath)) {
                 long[] fileCounts = count(fileReader);
 
                 totalCounts[0] += fileCounts[0];
                 totalCounts[1] += fileCounts[1];
                 totalCounts[2] += fileCounts[2];
 
-                writeCount(fileCounts, filename, writer);
-
+                writeCount(fileCounts, filepath, writer);
             } catch (IOException e) {
-
                 try {
                     writer.write("wc: " + e.getMessage());
                     writer.newLine();
@@ -83,7 +83,6 @@ public class WcCommand implements Command {
                 } catch (IOException ex) {
                     throw new OutputException(ex.getMessage());
                 }
-
                 hasFileErrors = true;
             }
         }

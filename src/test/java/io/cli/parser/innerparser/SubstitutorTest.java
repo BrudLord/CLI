@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class SubstitutorTest {
     @Test
     public void testBaseSubstitute() {
-        Context context = new Context();
+        Context context = Context.initial();
         context.setVar("x", "12");
         context.setVar("y", "404");
         var res = (new Substitutor()).substitute(List.of(new Token(TokenType.COMMAND, "x=$x;y=$y")), context);
@@ -21,7 +21,7 @@ public class SubstitutorTest {
     
     @Test
     public void testMissingVar() {
-        Context context = new Context();
+        Context context = Context.initial();
         var res = (new Substitutor()).substitute(List.of(new Token(TokenType.COMMAND, "x=$x;y=$y")), context);
         assertEquals(List.of(new Token(TokenType.COMMAND, "x=$x;y=$y")), res);
     }

@@ -2,6 +2,8 @@ package io.cli.command.impl.grep;
 
 import io.cli.command.Command;
 import io.cli.command.CommandFactory;
+import io.cli.context.Context;
+import io.cli.fs.PathFsApi;
 import io.cli.parser.token.Token;
 
 import java.util.List;
@@ -11,10 +13,15 @@ import java.util.Optional;
  * Factory class for creating instances of {@link GrepCommand}.
  */
 public class GrepCommandFactory implements CommandFactory {
+    private final PathFsApi fs;
+    private final Context context;
+
     /**
      * Default constructor for GrepCommandFactory.
      */
-    public GrepCommandFactory() {
+    public GrepCommandFactory(PathFsApi fs, Context context) {
+        this.fs = fs;
+        this.context = context;
     }
 
     private static boolean checkArgs(List<Token> args) {
@@ -32,6 +39,7 @@ public class GrepCommandFactory implements CommandFactory {
         if (!checkArgs(args)) {
             return Optional.empty();
         }
-        return Optional.of(new GrepCommand(args));
+        var grep = new GrepCommand(args, fs, context);
+        return Optional.of(grep);
     }
 }

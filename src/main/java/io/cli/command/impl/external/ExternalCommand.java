@@ -4,11 +4,9 @@ import io.cli.command.Command;
 import io.cli.context.Context;
 import io.cli.exception.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -66,7 +64,11 @@ public class ExternalCommand implements Command {
 
     private Process createAndStartProcess() throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder(args);
+
+        // populate context ENV into process ENV
         processBuilder.environment().putAll(context.getEnvironment());
+        // set process' directory to the CLI's pwd
+        processBuilder.directory(Paths.get(context.pwd()).toFile());
 
         // Handle interactive streams
         boolean isInputInteractive = inputStream.equals(System.in);

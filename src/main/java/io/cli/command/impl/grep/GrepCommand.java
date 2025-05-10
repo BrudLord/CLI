@@ -1,9 +1,11 @@
 package io.cli.command.impl.grep;
 
 import io.cli.command.Command;
+import io.cli.context.Context;
 import io.cli.exception.InputException;
 import io.cli.exception.InvalidOptionException;
 import io.cli.exception.NonZeroExitCodeException;
+import io.cli.fs.PathFsApi;
 import io.cli.parser.token.Token;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
@@ -36,8 +38,10 @@ import java.util.regex.Pattern;
         mixinStandardHelpOptions = true
 )
 public class GrepCommand implements Command, Callable<Integer> {
-
     private final List<Token> args;
+    private final PathFsApi fs;
+    private final Context context;
+
     @Option(names = {"-w", "--word-regexp"}, description = "Match only whole words")
     private boolean wholeWord;
     @Option(names = {"-i", "--ignore-case"}, description = "Ignore case distinctions")
@@ -56,8 +60,11 @@ public class GrepCommand implements Command, Callable<Integer> {
      *
      * @param args The arguments passed to the command.
      */
-    public GrepCommand(List<Token> args) {
+    public GrepCommand(List<Token> args, PathFsApi fs, Context context) {
         this.args = args;
+        this.fs = fs;
+        this.context = context;
+
         try {
             new CommandLine(this).parseArgs(args
                     .stream()
@@ -116,17 +123,18 @@ public class GrepCommand implements Command, Callable<Integer> {
             }
         } else {
             try {
-                for (String fileName : files) {
-                    Path path = Paths.get(fileName);
-                    try (BufferedReader reader = Files.newBufferedReader(path)) {
+                for (String filepath : files) {
+                    Path adjustedFilepath = fs.withWorkingDir(context, filepath);
+
+                    try (BufferedReader reader = Files.newBufferedReader(adjustedFilepath)) {
                         grepStream(reader, compiledPattern, writer);
                     } catch (IOException e) {
-                        throw new InputException("Have problem in file: " + fileName + ", problem: " + e.getMessage());
+                        throw new InputException("grep: have problem in file: " + filepath + ", problem: " + e.getMessage());
                     }
                 }
                 writer.flush();
             } catch (IOException e) {
-                throw new InputException("Have output: " + e.getMessage());
+                throw new InputException("grep: have output: " + e.getMessage());
             }
         }
 

@@ -14,7 +14,7 @@ class AssignCommandTest {
 
     @Test
     void executeShouldSetVariableInContext() {
-        var context = new Context();
+        var context = Context.initial();
 
         String key = "key", value = "value";
 
@@ -26,7 +26,7 @@ class AssignCommandTest {
 
     @Test
     void executeShouldUpdateExistingVariable() {
-        var context = new Context();
+        var context = Context.initial();
 
         String key = "key", oldValue = "oldValue", newValue = "newValue";
 
@@ -41,7 +41,7 @@ class AssignCommandTest {
 
     @Test
     void setStreamsShouldDoNothing() {
-        var context = new Context();
+        var context = Context.initial();
 
         String key = "key", value = "value";
 

@@ -3,16 +3,19 @@ package io.cli;
 import io.cli.command.CommandFactory;
 import io.cli.command.impl.assign.AssignCommandFactory;
 import io.cli.command.impl.cat.CatCommandFactory;
+import io.cli.command.impl.cd.CdCommandFactory;
 import io.cli.command.impl.echo.EchoCommandFactory;
 import io.cli.command.impl.exit.ExitCommandFactory;
 import io.cli.command.impl.external.ExternalCommandFactory;
 import io.cli.command.impl.grep.GrepCommandFactory;
+import io.cli.command.impl.ls.LsCommandFactory;
 import io.cli.command.impl.pwd.PwdCommandFactory;
 import io.cli.command.impl.wc.WcCommandFactory;
 import io.cli.context.Context;
 import io.cli.exception.CLIException;
 import io.cli.exception.ExitException;
 import io.cli.executor.Executor;
+import io.cli.fs.PathFsApi;
 import io.cli.parser.ParserOrchestrator;
 import io.cli.parser.innerparser.PipeParser;
 import io.cli.parser.innerparser.QuoteParser;
@@ -36,7 +39,7 @@ public final class Main {
      * @param args Command-line arguments (not used in this implementation).
      */
     public static void main(String[] args) {
-        Context context = new Context(); // Shared context for variables and state.
+        Context context = Context.initial(); // Shared context for variables and state.
         MainOrchestrator mainOrchestrator = getMainOrchestrator(context); // Setup main orchestrator.
 
         // Use try-with-resources to ensure Scanner is closed properly.
@@ -88,18 +91,22 @@ public final class Main {
         QuoteParser quoteParser = new QuoteParser();
         Substitutor substitutor = new Substitutor();
 
+        PathFsApi fs = new PathFsApi();
+
         // Set up the parser orchestrator with the parsers and shared context.
         ParserOrchestrator parserOrchestrator = new ParserOrchestrator(pipeParser, quoteParser, substitutor, context);
 
         // Define the available command factories.
         List<CommandFactory> commandFactories = List.of(
                 new AssignCommandFactory(context),
-                new CatCommandFactory(),
+                new CatCommandFactory(fs, context),
                 new EchoCommandFactory(),
                 new ExitCommandFactory(),
-                new GrepCommandFactory(),
-                new PwdCommandFactory(),
-                new WcCommandFactory(),
+                new GrepCommandFactory(fs, context),
+                new PwdCommandFactory(context),
+                new CdCommandFactory(context),
+                new LsCommandFactory(fs, context),
+                new WcCommandFactory(fs, context),
                 new ExternalCommandFactory(context) // ExternalCommandFactory must be last.
         );
 

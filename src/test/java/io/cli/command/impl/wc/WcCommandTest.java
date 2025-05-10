@@ -1,7 +1,9 @@
 package io.cli.command.impl.wc;
 
+import io.cli.context.Context;
 import io.cli.exception.CLIException;
 import io.cli.exception.InputException;
+import io.cli.fs.PathFsApi;
 import io.cli.parser.token.Token;
 import io.cli.parser.token.TokenType;
 import org.junit.jupiter.api.AfterEach;
@@ -30,12 +32,16 @@ public class WcCommandTest {
     private Token wcToken;
     private ByteArrayOutputStream outputStream;
     private PrintStream originalErr;
+    private PathFsApi fs;
+    private Context context;
 
     @BeforeEach
     void setUp() {
         outputStream = new ByteArrayOutputStream();
         originalErr = System.err;
         wcToken = new Token(TokenType.COMMAND, "wc");
+        fs = new PathFsApi();
+        context = Context.initial();
     }
 
     @AfterEach
@@ -54,7 +60,7 @@ public class WcCommandTest {
         String inputContent = "Hello world\nThis is a test\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(inputContent.getBytes());
 
-        WcCommand wcCommand = new WcCommand(Collections.singletonList(wcToken));
+        WcCommand wcCommand = new WcCommand(Collections.singletonList(wcToken), fs, context);
         wcCommand.setInputStream(inputStream);
         wcCommand.setOutputStream(outputStream);
 
@@ -66,7 +72,11 @@ public class WcCommandTest {
     void testWcFromSingleFile() throws IOException {
         Path testFile = createTempFile("testFile.txt", "Hello world\nThis is a test\n");
 
-        WcCommand wcCommand = new WcCommand(Arrays.asList(wcToken, new Token(TokenType.COMMAND, testFile.toString())));
+        WcCommand wcCommand = new WcCommand(
+                Arrays.asList(wcToken, new Token(TokenType.COMMAND, testFile.toString())),
+                fs,
+                context
+        );
         wcCommand.setOutputStream(outputStream);
 
         assertDoesNotThrow(wcCommand::execute);
@@ -84,9 +94,14 @@ public class WcCommandTest {
         Path file1 = createTempFile("file1.txt", "Hello\nWorld\n");
         Path file2 = createTempFile("file2.txt", "Goodbye\nMoon\n");
 
-        WcCommand wcCommand = new WcCommand(Arrays.asList(wcToken,
-                new Token(TokenType.COMMAND, file1.toString()),
-                new Token(TokenType.COMMAND, file2.toString())));
+        WcCommand wcCommand = new WcCommand(
+                Arrays.asList(wcToken,
+                    new Token(TokenType.COMMAND, file1.toString()),
+                    new Token(TokenType.COMMAND, file2.toString())
+                ),
+                fs,
+                context
+        );
         wcCommand.setOutputStream(outputStream);
 
         assertDoesNotThrow(wcCommand::execute);
@@ -99,7 +114,11 @@ public class WcCommandTest {
     @Test
     void testWcNonExistentFile() {
         Path missingFile = tempDir.resolve("missing.txt");
-        WcCommand wcCommand = new WcCommand(Arrays.asList(wcToken, new Token(TokenType.COMMAND, missingFile.toString())));
+        WcCommand wcCommand = new WcCommand(
+                Arrays.asList(wcToken, new Token(TokenType.COMMAND, missingFile.toString())),
+                fs,
+                context
+        );
         wcCommand.setOutputStream(outputStream);
 
         CLIException e = assertThrows(CLIException.class, wcCommand::execute);
@@ -115,11 +134,15 @@ public class WcCommandTest {
         Path file = createTempFile("test1.txt", "file content\n");
         String missingFile = tempDir.resolve("missing.txt").toString();
 
-        WcCommand wcCommand = new WcCommand(Arrays.asList(
-                wcToken,
-                new Token(TokenType.COMMAND, file.toString()),
-                new Token(TokenType.COMMAND, missingFile)
-        ));
+        WcCommand wcCommand = new WcCommand(
+                Arrays.asList(
+                    wcToken,
+                    new Token(TokenType.COMMAND, file.toString()),
+                    new Token(TokenType.COMMAND, missingFile)
+                ),
+                fs,
+                context
+        );
         wcCommand.setOutputStream(outputStream);
 
         CLIException e = assertThrows(CLIException.class, wcCommand::execute);
@@ -143,7 +166,11 @@ public class WcCommandTest {
             }
         };
 
-        WcCommand wcCommand = new WcCommand(Collections.singletonList(wcToken));
+        WcCommand wcCommand = new WcCommand(
+                Collections.singletonList(wcToken),
+                fs,
+                context
+        );
         wcCommand.setInputStream(errorInputStream);
         wcCommand.setOutputStream(outputStream);
 
